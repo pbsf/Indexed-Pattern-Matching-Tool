@@ -5,7 +5,8 @@ using namespace std;
 #include <cassert>
 #include <vector>
 
-// TODO: Make TokenSet more space efficient.
+// TODO: Make TokenSet more space efficient using bit_vector[] instead of
+// vector<int>.
 
 // Represents a Node in the Dictionary, which has a Trie's structure.
 class DictNode {
@@ -97,7 +98,6 @@ TokenSet* lz78_encode(string txt) {
         if (cur->has_node(txt[i])) {
             cur = cur->get_node(txt[i]);
         } else {
-            //code = code + cur->idx + txt[i];
             codeStr += txt[i];
             codeInt.push_back(cur->idx);
             cur->add_node(txt[i], d);
@@ -108,17 +108,43 @@ TokenSet* lz78_encode(string txt) {
         }
         i++;
     }
+    // If the last char visited already exists on the dictionary, we must add
+    // it to the code.
+    if (cur != first) {
+        codeStr += txt[i-1];
+        codeInt.push_back(cur->parent->idx);
+    }
     return new TokenSet(codeStr, codeInt, dict);
 }
 
-int main() {
-    string txt = "abragoisgjiost 230j 023jf0jfew0fj sdofij cadabra";
-
+void test(string txt) {
     TokenSet* token_set = lz78_encode(txt);
     string output = token_set->decode();
     cout << "Input   string: " << txt << endl;
     cout << "Decoded string: " << output << endl;
     assert(txt == output);
+}
+
+void tests() {
+    vector<string> tests;
+    tests.push_back("a");
+    tests.push_back("aa");
+    tests.push_back("aaa");
+    tests.push_back("abracadabra");
+    tests.push_back("shfda asd de12 $%!!@ -adsd");
+    tests.push_back("a028H082G 2g08h08h02JG0J 240");
+    tests.push_back("");
+    tests.push_back(" ");
+    tests.push_back("_______________");
+    for (vector<int>::size_type i = 0; i != tests.size(); i++) {
+        cout << "Test #" << i+1 << endl;
+        test(tests[i]);
+        cout << endl;
+    }
+}
+
+int main() {
+    tests();
     return 0;
 }
 
