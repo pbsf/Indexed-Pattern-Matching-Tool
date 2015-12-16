@@ -1,10 +1,13 @@
 using namespace std;
+
 #include <map>
 #include <iostream>
 #include <cassert>
-#include <cmath>
-#include <stdlib.h>
 #include <vector>
+
+// TODO: Make TokenSet more space efficient.
+// TODO: Currently the implementation fails if it finds the char '$' on the
+// text. Fix this.
 
 class DictNode {
   public:
@@ -82,8 +85,7 @@ class TokenSet {
         }
 };
 
-TokenSet* lz78_encode(string txt, char inputA[], char outputA[]) {
-    txt = txt+"$";
+TokenSet* lz78_encode(string txt) {
     int size = txt.length();
 
     DictNode* first = new DictNode(0, '$', NULL);
@@ -115,15 +117,12 @@ TokenSet* lz78_encode(string txt, char inputA[], char outputA[]) {
 
 int main() {
     string txt = "abragoisgjiost 230j 023jf0jfew0fj sdofij cadabra";
-    char outputA [2];
-    outputA[0] = '0'; outputA[1] = '1';
-    char inputA [256];
-    for (int i = 0; i < 256; i++) {
-        inputA[i]= '0' + i;
-    }
 
-    TokenSet* token_set = lz78_encode(txt, inputA, outputA);
+    TokenSet* token_set = lz78_encode(txt);
     string output = token_set->decode();
+    cout << "Input   string: " << txt << endl;
+    cout << "Decoded string: " << output << endl;
     assert(txt == output);
     return 0;
 }
+
