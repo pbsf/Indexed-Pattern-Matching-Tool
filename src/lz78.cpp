@@ -6,8 +6,6 @@ using namespace std;
 #include <vector>
 
 // TODO: Make TokenSet more space efficient.
-// TODO: Currently the implementation fails if it finds the char '$' on the
-// text. Fix this.
 
 // Represents a Node in the Dictionary, which has a Trie's structure.
 class DictNode {
@@ -16,11 +14,13 @@ class DictNode {
     char byte;
     DictNode* parent;
     map<char, DictNode*> children;
+    bool isFirst;
 
     DictNode(int i, char c, DictNode* p) {
         idx = i;
         byte = c;
         parent = p;
+        isFirst = false;
     }
 
     void add_node(char c, int new_idx) {
@@ -65,14 +65,14 @@ class TokenSet {
             int i = codeInt[p];
             char c = codeStr[p];
             string output = decode_node(dict[i]);
-            if (c != '$') output += c;
+            output += c;
             return output;
         }
 
         string decode_node(DictNode* node) {
             string output = "";
             DictNode* cur = node;
-            while (cur->byte != '$') {
+            while (!cur->isFirst) {
                 output = cur->byte + output;
                 cur = cur->parent;
             }
@@ -84,6 +84,7 @@ TokenSet* lz78_encode(string txt) {
     int size = txt.length();
 
     DictNode* first = new DictNode(0, '$', NULL);
+    first->isFirst = true;
     map<int, DictNode*> dict;
     dict[0] = first;
 
