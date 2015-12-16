@@ -54,7 +54,7 @@ class TokenSet {
             dict = d;
         }
 
-        string get_code() {
+        string decode() {
             int size = codeInt.size();
             string output;
             for(int i = 0; i < size; i++) {
@@ -123,7 +123,7 @@ int main() {
     }
 
     TokenSet* token_set = lz78_encode(txt, inputA, outputA);
-    string output = token_set->get_code();
+    string output = token_set->decode();
     assert(txt == output);
     return 0;
 }
