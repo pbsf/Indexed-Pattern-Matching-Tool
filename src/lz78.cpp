@@ -9,6 +9,7 @@ using namespace std;
 // TODO: Currently the implementation fails if it finds the char '$' on the
 // text. Fix this.
 
+// Represents a Node in the Dictionary, which has a Trie's structure.
 class DictNode {
   public:
     int idx;
@@ -36,12 +37,6 @@ class DictNode {
         assert(i != children.end());
         return i->second;
     }
-};
-
-class Dict {
-    public:
-        map<int, DictNode*> dict;
-
 };
 
 // Stores the compression's output and the compression's dictionary.
