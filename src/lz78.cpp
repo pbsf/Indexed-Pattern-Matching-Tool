@@ -86,8 +86,7 @@ class TokenSet {
         }
 };
 
-TokenSet* lz78_encode(string txt) {
-    int size = txt.length();
+TokenSet* lz78_encode(char* txt, int size) {
 
     DictNode* first = new DictNode(0, '$', NULL);
     first->isFirst = true;
@@ -123,7 +122,9 @@ TokenSet* lz78_encode(string txt) {
 }
 
 void test(string txt) {
-    TokenSet* token_set = lz78_encode(txt);
+    char input[txt.size()];
+    strcpy(input, txt.c_str());
+    TokenSet* token_set = lz78_encode(input, txt.size());
     string output = token_set->decode();
     cout << "Input   string: " << txt << endl;
     cout << "Decoded string: " << output << endl;
