@@ -5,8 +5,13 @@ using namespace std;
 #include <cassert>
 #include <vector>
 
+// Implementation of the LZ78.
+// References: https://docs.google.com/document/d/17rxbuMELIvZBUP_FGxQXGg0xCe-3d7vGUaQg1JDU3cw
+// faculty.kfupm.edu.sa/ICS/jauhar/ics202/Unit31_LZ78.ppt
+
 // TODO: Make TokenSet more space efficient using bit_vector[] instead of
 // vector<int>.
+
 
 // Represents a Node in the Dictionary, which has a Trie's structure.
 class DictNode {
