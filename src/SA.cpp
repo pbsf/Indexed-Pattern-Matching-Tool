@@ -30,6 +30,11 @@ class SuffixArray{
 			}
 			binarySearch(this->sa,p,0,this->n-1);
 			FILE *output = fopen("out.idx","w");
+			
+			for(int i=0; i<this->sa.size(); i++){
+				fprintf(output, "%d ",sa[i]);
+			}
+			fprintf(output, "\n");	
 			for(int i=0; i<this->Llcp.size(); i++){
 				fprintf(output, "%d ",Llcp[i]);
 			}
