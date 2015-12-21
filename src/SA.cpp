@@ -183,7 +183,7 @@ class SuffixArray{
 		int i = 0;
 		int textSize = text.size();
 		int patSize = pat.size(); 
-		while(text.at(i) == pat.at(i) && i < textSize && i < patSize){
+		while(text[i] == pat[i] && i < textSize && i < patSize){
 			i++;
 		}
 		return i;
