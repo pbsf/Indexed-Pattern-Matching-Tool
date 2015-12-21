@@ -34,7 +34,8 @@ class SuffixArray{
 			for(int i=0; i<this->sa.size(); i++){
 				fprintf(output, "%d ",sa[i]);
 			}
-			fprintf(output, "\n");	
+			fprintf(output, "\n");			
+
 			for(int i=0; i<this->Llcp.size(); i++){
 				fprintf(output, "%d ",Llcp[i]);
 			}
@@ -125,12 +126,74 @@ class SuffixArray{
 			return lcp;
 		}
 	}
+	int countMatches(string pat){
+		int patLen = pat.size();
+		int pos = find(pat);
+		int matches = 0;
+		while(this->text.substr(this->sa[pos],patLen) == pat){
+			pos++;
+			matches++;
+		}
+		printf("%d\n",matches);
+		return matches;
+	}
+
+	int find(string pat){
+		int patLen = pat.size();
+		int L = longestCommonPreffix(this->text.substr(this->sa[0]), pat);
+		int R = longestCommonPreffix(this->text.substr(this->sa[this->n-1]), pat);
+		if (L == patLen || pat.substr(L) <= this->text.substr(this->sa[0] + L)){
+			return 0;
+		}else if(R < patLen && pat.substr(R) > this->text.substr(this->sa[this->n-1] + R)){
+			return this->n;
+		}else{
+			int r = this->n-1;
+			int l = 0;
+			int m = 0;
+			int H = 0;
+
+			while(r - l > 1){
+				m = (l + r)/2;
+				if(L >= R){
+					if(this->Llcp[m] >= L){
+						H = L + longestCommonPreffix(this->text.substr(this->sa[m] + L), pat.substr(L));
+					}else{
+						H = this->Llcp[m];
+					}
+				}else{
+					if(this->Rlcp[m] >= R){
+						H = R + longestCommonPreffix(this->text.substr(this->sa[m] + R), pat.substr(R));
+					}else{
+						H = this->Rlcp[m];
+					}
+				}
+				if (H == patLen || pat.substr(H) <= this->text.substr(this->sa[m] + H)){
+					r = m;
+					R = H;
+				}else{
+					l = m;
+					L = H;
+				}
+			}
+			return r;
+		}
+	}
+
+	int longestCommonPreffix(string text,string pat){
+		int i = 0;
+		int textSize = text.size();
+		int patSize = pat.size(); 
+		while(text.at(i) == pat.at(i) && i < textSize && i < patSize){
+			i++;
+		}
+		return i;
+	}
 
 };
 
 int main(){
 	//Para arquivo texto de entrada
-	/*
+	
 	ifstream infile;
 	infile.open("test_file.txt");
 
@@ -139,7 +202,8 @@ int main(){
 		text+=line;
 	}
 	SuffixArray sa= SuffixArray(text);
-	*/
+	sa.countMatches("Song");
+	
 
 	//Testes com palavras
 	/*
