@@ -1,17 +1,22 @@
 using namespace std;
-
+#include <fstream>
 #include <map>
 #include <iostream>
 #include <cassert>
 #include <vector>
+#include <sstream>
+#include <iterator>
+// TODO: Comentário de paguso: com um alfabeto pequeno como o ascii, você pode
+// iniciar o dicionário já com uma entrada para cada letra e, assim, sempre vai
+// ter pelo menos um match com alguma entrada no dicionário, eliminando assim a
+// necessidade de representar o caractere do mismatch na palavra de código. tem
+// um pequeno custo acrescido de já iniciar o dicionário com uma entrada para
+// cada letra, o que aumenta uns bits nos índices das entradas, mas essa
+// diferença é rapidamente compensada.
 
 // Implementation of the LZ78.
 // References: https://docs.google.com/document/d/17rxbuMELIvZBUP_FGxQXGg0xCe-3d7vGUaQg1JDU3cw
 // faculty.kfupm.edu.sa/ICS/jauhar/ics202/Unit31_LZ78.ppt
-
-// TODO: Make TokenSet more space efficient using bit_vector[] instead of
-// vector<int>.
-
 
 // Represents a Node in the Dictionary, which has a Trie's structure.
 class DictNode {
@@ -21,6 +26,13 @@ class DictNode {
     DictNode* parent;
     map<char, DictNode*> children;
     bool isFirst;
+
+    DictNode(int i, char c) {
+        idx = i;
+        byte = c;
+        parent = NULL;
+        isFirst = true;
+    }
 
     DictNode(int i, char c, DictNode* p) {
         idx = i;
@@ -45,56 +57,74 @@ class DictNode {
     }
 };
 
-// Stores the compression's output and the compression's dictionary.
-// codeInt[i],codeStr[i] is the token at position i.
-class TokenSet {
-    public:
-        string codeStr;
-        vector<int> codeInt;
-        map<int, DictNode*> dict;
-        TokenSet(string s, vector<int> v, map<int, DictNode*> d) {
-            codeStr = s;
-            codeInt = v;
-            dict = d;
+// For debug purposes only
+void print_vector(vector<bool> b) {
+    for (vector<bool>::const_iterator it = b.begin(); it != b.end(); it++) {
+        cout << *it;
+    }
+    cout << endl;
+}
+
+void print_vector2(vector< pair<int, int> > b) {
+    cout << "[";
+    for (vector< pair<int, int> >::const_iterator it = b.begin(); it != b.end(); it++) {
+        cout << "(" << it->first << ", " << it->second << "), ";
+    }
+    cout << "]" << endl;
+}
+
+vector<bool> _int_to_bits(int i, int n) {
+    vector<bool> b(n); //convent number into bit array
+    for (int pos = b.size()-1; pos >= 0; pos--) {
+        if ((i & 1) == 1) {
+            b[pos] = 1;
         }
+        i = i >> 1;
+    }
+    return b;
+}
 
-        string decode() {
-            int size = codeInt.size();
-            string output;
-            for(int i = 0; i < size; i++) {
-                output += decode_token_at_position(i);
-            }
-            return output;
-        }
+vector<bool> int_to_bits(int i) {
+    int copyI = i;
+    int number_of_bits = 0;
+    while (copyI > 0) {
+        number_of_bits++;
+        copyI = copyI >> 1;
+    }
+    if (number_of_bits == 0) number_of_bits = 1;
+    return _int_to_bits(i, number_of_bits);
+}
 
-        string decode_token_at_position(int p) {
-            int i = codeInt[p];
-            char c = codeStr[p];
-            string output = decode_node(dict[i]);
-            output += c;
-            return output;
-        }
+vector<bool> _rev_encode(vector<bool> code) {
+    int n = code.size();
+    if (n <= 1) return code;
+    vector<bool> new_vector = _rev_encode(int_to_bits(n-2));
+    new_vector.insert(new_vector.end(), code.begin(), code.end());
+    return new_vector;
+}
 
-        string decode_node(DictNode* node) {
-            string output = "";
-            DictNode* cur = node;
-            while (!cur->isFirst) {
-                output = cur->byte + output;
-                cur = cur->parent;
-            }
-            return output;
-        }
-};
+vector<bool> rev_encode(vector<bool> code) {
+    code.insert(code.begin(), 1);
+    code = _rev_encode(code);
+    code.push_back(0);
+    return code;
+}
 
-TokenSet* lz78_encode(char* txt, int size) {
+vector<bool> cw_encode(int idx, char c) {
+    vector<bool> first = rev_encode(int_to_bits(idx));
+    vector<bool> second = rev_encode(int_to_bits(c));
+    first.insert(first.end(), second.begin(), second.end());
+    return first;
+}
 
+
+vector<bool> lz78_encode(string txt) {
+    txt += "$";
+    int size = txt.length();
     DictNode* first = new DictNode(0, '$', NULL);
     first->isFirst = true;
     map<int, DictNode*> dict;
-    dict[0] = first;
-
-    string codeStr = "";
-    vector<int> codeInt;
+    vector<bool> code;
     int i = 0;
     int d = 1;
     DictNode* cur = first;
@@ -102,30 +132,96 @@ TokenSet* lz78_encode(char* txt, int size) {
         if (cur->has_node(txt[i])) {
             cur = cur->get_node(txt[i]);
         } else {
-            codeStr += txt[i];
-            codeInt.push_back(cur->idx);
+            vector<bool> new_code = cw_encode(cur->idx, txt[i]);
+            code.insert(code.end(), new_code.begin(), new_code.end());
             cur->add_node(txt[i], d);
-            DictNode* new_node = cur->get_node(txt[i]);
-            dict[d] = new_node;
             d++;
             cur = first;
         }
         i++;
     }
-    // If the last char visited already exists on the dictionary, we must add
-    // it to the code.
-    if (cur != first) {
-        codeStr += txt[i-1];
-        codeInt.push_back(cur->parent->idx);
+    return code;
+}
+
+int vector_bool_to_int(vector<bool> v) {
+    int multiplier = 1;
+    int result = 0;
+    for (int i = v.size()-1; i >= 0; i--) {
+        result += multiplier * v[i];
+        multiplier *= 2;
     }
-    return new TokenSet(codeStr, codeInt, dict);
+    return result;
+}
+
+pair<int, int> cw_decode(vector<bool> v) {
+    int k = 1;
+    int j = 0;
+    vector<bool> Y;
+    while (j == 0 || v[j] != 0) {
+        vector<bool> temp(v.begin() + j, v.begin() + j + k);
+        Y = temp;
+        j += k;
+        k = vector_bool_to_int(Y) + 2;
+    }
+    // TODO: Check what happens when this vector is empty.
+    vector<bool> voutput(Y.begin()+1, Y.end());
+    pair<int, int> output;
+    output.first = vector_bool_to_int(voutput);
+    output.second = j+1;
+    return output;
+}
+
+string lz78_decode(vector<bool> v) {
+    string txt = "";
+    vector< pair<int, int> > D;
+    D.push_back(make_pair(0,0));
+    int d = 1;
+    int i = 0;
+    int size = v.size();
+    while (i < size) {
+        vector<bool> Y(v.begin() + i, v.end());
+        pair<int, int> p = cw_decode(Y);
+        i += p.second;
+        vector<bool> Y2(v.begin() + i, v.end());
+        pair<int, int> p2 = cw_decode(Y2);
+        i += p2.second;
+        char c = p2.first;
+        txt += txt.substr(D[p.first].first, D[p.first].second - D[p.first].first) + c;
+        D.push_back(make_pair(txt.size()-((D[p.first].second-D[p.first].first)+1), txt.size()));
+        d += 1;
+    }
+    return txt.substr(0, txt.size()-1);
+}
+
+string decode_file(string filepath) {
+    ifstream infile (filepath, ifstream::binary);
+    vector<bool> encoded((std::istreambuf_iterator<char>(infile)),
+                       std::istreambuf_iterator<char>());
+    return lz78_decode(encoded);
+}
+
+void encode_text(string text, string output_file) {
+    vector<bool> encoded = lz78_encode(text);
+    cout << encoded.size() << endl;
+    ofstream outfile(output_file, ios::out | ios::binary);
+    std::copy(encoded.begin(), encoded.end(), std::ostreambuf_iterator<char>(outfile));
+}
+
+void encode_file(string filepath) {
+    ifstream t(filepath);
+    stringstream buffer;
+    buffer << t.rdbuf();
+    string to_encode = buffer.str();
+
+    // Finding new filename -> .idx extension
+    size_t lastindex = filepath.find_last_of(".");
+    string idx_name = filepath.substr(0, lastindex) + ".idx";
+    encode_text(to_encode, idx_name);
 }
 
 void test(string txt) {
-    char input[txt.size()];
-    strcpy(input, txt.c_str());
-    TokenSet* token_set = lz78_encode(input, txt.size());
-    string output = token_set->decode();
+    vector<bool> code = lz78_encode(txt);
+    string output = lz78_decode(code);
     cout << "Input   string: " << txt << endl;
     cout << "Decoded string: " << output << endl;
     assert(txt == output);

@@ -1,7 +1,8 @@
+using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
-#include <string.h>
+#include <iostream>
 /* ipmt command-line interface
    Reference: http://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Option-Example.html
 */
@@ -17,10 +18,11 @@ int searchmode = 0;
 char* pvalue = NULL;
 char* compvalue = NULL;
 char* idxvalue = NULL;
+// TODO:help_text below.
+string help_text = "HELP TEXT";
 
 void print_help() {
-    // TODO
-    printf("HELP TEXT\n");
+    cout << help_text << endl;
     exit(0);
 }
 
@@ -121,9 +123,10 @@ int main (int argc, char **argv) {
             idxflag = 1;
             idxvalue = optarg;
             break;
+
         case 'h':
             print_help();
-            exit(0);
+
         default:
               abort ();
         }
