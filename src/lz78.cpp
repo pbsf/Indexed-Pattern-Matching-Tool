@@ -252,10 +252,9 @@ void tests() {
 }
 
 int main() {
-
-    vector<bool> code = encode_file("temp.txt");
-    string decoded = decode_file("temp.idx");
-    cout << decoded << endl;
+    //vector<bool> code = encode_file("temp.txt");
+    //string decoded = decode_file("temp.idx");
+    //cout << decoded << endl;
     tests();
     return 0;
 }
