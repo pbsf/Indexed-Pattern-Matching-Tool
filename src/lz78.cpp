@@ -23,26 +23,15 @@ class DictNode {
   public:
     int idx;
     char byte;
-    DictNode* parent;
     map<char, DictNode*> children;
-    bool isFirst;
 
     DictNode(int i, char c) {
         idx = i;
         byte = c;
-        parent = NULL;
-        isFirst = true;
-    }
-
-    DictNode(int i, char c, DictNode* p) {
-        idx = i;
-        byte = c;
-        parent = p;
-        isFirst = false;
     }
 
     void add_node(char c, int new_idx) {
-        DictNode* new_node = new DictNode(new_idx, c, this);
+        DictNode* new_node = new DictNode(new_idx, c);
         children[c] = new_node;
     }
 
@@ -63,14 +52,6 @@ void print_vector(vector<bool> b) {
         cout << *it;
     }
     cout << endl;
-}
-
-void print_vector2(vector< pair<int, int> > b) {
-    cout << "[";
-    for (vector< pair<int, int> >::const_iterator it = b.begin(); it != b.end(); it++) {
-        cout << "(" << it->first << ", " << it->second << "), ";
-    }
-    cout << "]" << endl;
 }
 
 vector<bool> _int_to_bits(int i, int n) {
@@ -117,12 +98,10 @@ vector<bool> cw_encode(int idx, char c) {
     return first;
 }
 
-
 vector<bool> lz78_encode(string txt) {
     txt += "$";
     int size = txt.length();
-    DictNode* first = new DictNode(0, '$', NULL);
-    first->isFirst = true;
+    DictNode* first = new DictNode(0, '$');
     map<int, DictNode*> dict;
     vector<bool> code;
     int i = 0;
@@ -182,6 +161,7 @@ string lz78_decode(vector<bool> v) {
         vector<bool> Y(v.begin() + i, v.end());
         pair<int, int> p = cw_decode(Y);
         i += p.second;
+        if (i >= size) break; // Necessary to avoid filling 0s in a byte.
         vector<bool> Y2(v.begin() + i, v.end());
         pair<int, int> p2 = cw_decode(Y2);
         i += p2.second;
@@ -193,21 +173,47 @@ string lz78_decode(vector<bool> v) {
     return txt.substr(0, txt.size()-1);
 }
 
+int current_bit = 0;
+unsigned char bit_buffer;
+void WriteBit (int bit, FILE *f) {
+    if (bit)
+        bit_buffer |= (1<<current_bit);
+
+    current_bit++;
+    if (current_bit == 8) {
+        fwrite (&bit_buffer, 1, 1, f);
+        current_bit = 0;
+        bit_buffer = 0;
+    }
+}
+
+void Flush_Bits (FILE *f) {
+    while (current_bit)
+        WriteBit (0, f);
+}
+
 string decode_file(string filepath) {
     ifstream infile (filepath, ifstream::binary);
-    vector<bool> encoded((std::istreambuf_iterator<char>(infile)),
-                       std::istreambuf_iterator<char>());
+    vector<bool> encoded;
+    char c;
+    while (infile.get(c)) {
+        for (int i = 0; i < 8; i++)
+            encoded.push_back(((c >> i) & 1));
+    }
     return lz78_decode(encoded);
 }
 
-void encode_text(string text, string output_file) {
+vector<bool> encode_text(string text, string output_file) {
     vector<bool> encoded = lz78_encode(text);
-    cout << encoded.size() << endl;
-    ofstream outfile(output_file, ios::out | ios::binary);
-    std::copy(encoded.begin(), encoded.end(), std::ostreambuf_iterator<char>(outfile));
+    FILE *f = fopen(output_file.c_str(), "wb");
+    for (bool b : encoded)
+        WriteBit(b, f);
+    Flush_Bits(f);
+    fclose(f);
+    return encoded;
 }
 
-void encode_file(string filepath) {
+vector<bool> encode_file(string filepath) {
     ifstream t(filepath);
     stringstream buffer;
     buffer << t.rdbuf();
@@ -216,7 +222,7 @@ void encode_file(string filepath) {
     // Finding new filename -> .idx extension
     size_t lastindex = filepath.find_last_of(".");
     string idx_name = filepath.substr(0, lastindex) + ".idx";
-    encode_text(to_encode, idx_name);
+    return encode_text(to_encode, idx_name);
 }
 
 void test(string txt) {
@@ -246,6 +252,10 @@ void tests() {
 }
 
 int main() {
+
+    vector<bool> code = encode_file("temp.txt");
+    string decoded = decode_file("temp.idx");
+    cout << decoded << endl;
     tests();
     return 0;
 }
