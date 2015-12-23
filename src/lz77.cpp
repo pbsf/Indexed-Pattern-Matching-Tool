@@ -29,7 +29,7 @@ vector<char> decompressor(const vector<token> &tokens){
   vector<char> output;
 
   for(token t : tokens ){
-    if(t.offset != 0 && t.length != 0){
+    if(!(t.offset == 0 || t.length == 0)){
       int start_point = output.size() - t.offset;
       int end_point   = start_point + t.length;
       for(int i = start_point; i < end_point ; i++ ){
