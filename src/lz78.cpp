@@ -27,7 +27,6 @@ class DictNode {
             // Populating all ASCII chars below the first DictNode
             for (int c = 0; c < 256; c++) {
                 add_node((char)c, ++i);
-                cout << (char)c << endl;
             }
         }
     }
@@ -227,10 +226,10 @@ void tests() {
 }
 
 int main() {
-    vector<bool> code = encode_file("proteins.50MB");
+    //vector<bool> code = encode_file("proteins.50MB");
     //string decoded = decode_file("temp.idx");
     //cout << decoded << endl;
-    //tests();
+    tests();
     return 0;
 }
 
