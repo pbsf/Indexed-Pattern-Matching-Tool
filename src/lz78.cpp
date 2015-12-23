@@ -8,17 +8,10 @@ using namespace std;
 #include <iterator>
 #include "util.cpp"
 
-// TODO: Comentário de paguso: com um alfabeto pequeno como o ascii, você pode
-// iniciar o dicionário já com uma entrada para cada letra e, assim, sempre vai
-// ter pelo menos um match com alguma entrada no dicionário, eliminando assim a
-// necessidade de representar o caractere do mismatch na palavra de código. tem
-// um pequeno custo acrescido de já iniciar o dicionário com uma entrada para
-// cada letra, o que aumenta uns bits nos índices das entradas, mas essa
-// diferença é rapidamente compensada.
-
-// Implementation of the LZ78.
+// LZ78
 // References: https://docs.google.com/document/d/17rxbuMELIvZBUP_FGxQXGg0xCe-3d7vGUaQg1JDU3cw
-// faculty.kfupm.edu.sa/ICS/jauhar/ics202/Unit31_LZ78.ppt
+//             faculty.kfupm.edu.sa/ICS/jauhar/ics202/Unit31_LZ78.ppt
+
 
 // Represents a Node in the Dictionary, which has a Trie's structure.
 class DictNode {
@@ -27,13 +20,20 @@ class DictNode {
     char byte;
     map<char, DictNode*> children;
 
-    DictNode(int i, char c) {
+    DictNode(int i, char c, bool isFirst) {
         idx = i;
         byte = c;
+        if (isFirst) {
+            // Populating all ASCII chars below the first DictNode
+            for (int c = 0; c < 256; c++) {
+                add_node((char)c, ++i);
+                cout << (char)c << endl;
+            }
+        }
     }
 
     void add_node(char c, int new_idx) {
-        DictNode* new_node = new DictNode(new_idx, c);
+        DictNode* new_node = new DictNode(new_idx, c, false);
         children[c] = new_node;
     }
 
@@ -95,7 +95,7 @@ vector<bool> cw_encode(int idx, char c) {
 vector<bool> lz78_encode(string txt) {
     txt += "$";
     int size = txt.length();
-    DictNode* first = new DictNode(0, '$');
+    DictNode* first = new DictNode(0, '$', true);
     map<int, DictNode*> dict;
     vector<bool> code;
     int i = 0;
@@ -182,8 +182,8 @@ string decode_file(string filepath) {
 vector<bool> encode_text(string text, string output_file) {
     vector<bool> encoded = lz78_encode(text);
     FILE *f = fopen(output_file.c_str(), "wb");
-    for (bool b : encoded)
-        write_bit(b, f);
+    for (int i = 0; i < encoded.size(); i++)
+        write_bit(encoded[i], f);
     close_file(f);
     return encoded;
 }
