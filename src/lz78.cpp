@@ -25,9 +25,10 @@ class DictNode {
         byte = c;
         if (isFirst) {
             // Populating all ASCII chars below the first DictNode
-            for (int c = 0; c < 256; c++) {
-                add_node((char)c, ++i);
-            }
+            //for (int c = 0; c < 256; c++) {
+                //i++;
+                //add_node((char)c, i);
+            //}
         }
     }
 
@@ -200,11 +201,11 @@ vector<bool> encode_file(string filepath) {
 }
 
 void test(string txt) {
-    //vector<bool> code = lz78_encode(txt);
-    //string output = lz78_decode(code);
-    //cout << "Input   string: " << txt << endl;
-    //cout << "Decoded string: " << output << endl;
-    //assert(txt == output);
+    vector<bool> code = lz78_encode(txt);
+    string output = lz78_decode(code);
+    cout << "Input   string: " << txt << endl;
+    cout << "Decoded string: " << output << endl;
+    assert(txt == output);
 }
 
 void tests() {
