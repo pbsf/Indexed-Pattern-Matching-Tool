@@ -6,6 +6,8 @@ using namespace std;
 #include <vector>
 #include <sstream>
 #include <iterator>
+#include "util.cpp"
+
 // TODO: Comentário de paguso: com um alfabeto pequeno como o ascii, você pode
 // iniciar o dicionário já com uma entrada para cada letra e, assim, sempre vai
 // ter pelo menos um match com alguma entrada no dicionário, eliminando assim a
@@ -46,16 +48,8 @@ class DictNode {
     }
 };
 
-// For debug purposes only
-void print_vector(vector<bool> b) {
-    for (vector<bool>::const_iterator it = b.begin(); it != b.end(); it++) {
-        cout << *it;
-    }
-    cout << endl;
-}
-
 vector<bool> _int_to_bits(int i, int n) {
-    vector<bool> b(n); //convent number into bit array
+    vector<bool> b(n); //convert number into bit array
     for (int pos = b.size()-1; pos >= 0; pos--) {
         if ((i & 1) == 1) {
             b[pos] = 1;
@@ -173,25 +167,6 @@ string lz78_decode(vector<bool> v) {
     return txt.substr(0, txt.size()-1);
 }
 
-int current_bit = 0;
-unsigned char bit_buffer;
-void WriteBit (int bit, FILE *f) {
-    if (bit)
-        bit_buffer |= (1<<current_bit);
-
-    current_bit++;
-    if (current_bit == 8) {
-        fwrite (&bit_buffer, 1, 1, f);
-        current_bit = 0;
-        bit_buffer = 0;
-    }
-}
-
-void Flush_Bits (FILE *f) {
-    while (current_bit)
-        WriteBit (0, f);
-}
-
 string decode_file(string filepath) {
     ifstream infile (filepath, ifstream::binary);
     vector<bool> encoded;
@@ -200,6 +175,7 @@ string decode_file(string filepath) {
         for (int i = 0; i < 8; i++)
             encoded.push_back(((c >> i) & 1));
     }
+    // TODO: Check how long operation above takes for big files.
     return lz78_decode(encoded);
 }
 
@@ -207,9 +183,8 @@ vector<bool> encode_text(string text, string output_file) {
     vector<bool> encoded = lz78_encode(text);
     FILE *f = fopen(output_file.c_str(), "wb");
     for (bool b : encoded)
-        WriteBit(b, f);
-    Flush_Bits(f);
-    fclose(f);
+        write_bit(b, f);
+    close_file(f);
     return encoded;
 }
 
@@ -226,11 +201,11 @@ vector<bool> encode_file(string filepath) {
 }
 
 void test(string txt) {
-    vector<bool> code = lz78_encode(txt);
-    string output = lz78_decode(code);
-    cout << "Input   string: " << txt << endl;
-    cout << "Decoded string: " << output << endl;
-    assert(txt == output);
+    //vector<bool> code = lz78_encode(txt);
+    //string output = lz78_decode(code);
+    //cout << "Input   string: " << txt << endl;
+    //cout << "Decoded string: " << output << endl;
+    //assert(txt == output);
 }
 
 void tests() {
@@ -252,10 +227,10 @@ void tests() {
 }
 
 int main() {
-    //vector<bool> code = encode_file("temp.txt");
+    vector<bool> code = encode_file("proteins.50MB");
     //string decoded = decode_file("temp.idx");
     //cout << decoded << endl;
-    tests();
+    //tests();
     return 0;
 }
 
