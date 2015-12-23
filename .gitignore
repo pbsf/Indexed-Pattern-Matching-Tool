@@ -34,3 +34,10 @@
 
 # Executable folder
 bin/*
+
+# Latex
+*.toc
+*.log
+*.bbl
+*.blg
+*.aux
