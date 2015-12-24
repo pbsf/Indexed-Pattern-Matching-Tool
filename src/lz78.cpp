@@ -14,10 +14,10 @@ using namespace std;
 
 // Vector pointers used in the implementation
 vector<bool> zero(1);
-vector<bool> first;
-vector<bool> second;
+vector<bool>* first;
+vector<bool>* second;
 vector<bool> new_vector;
-vector<bool> new_code;
+vector<bool>* new_code;
 
 // Represents a Node in the Dictionary, which has a Trie's structure.
 class DictNode {
@@ -57,53 +57,68 @@ class DictNode {
     }
 };
 
-vector<bool> _int_to_bits(int i, int n) {
-    vector<bool> b(n); //convert number into bit array
-    for (int pos = b.size()-1; pos >= 0; pos--) {
+vector<bool> b;
+
+vector<bool>* _int_to_bits(int i, int n) {
+    //vector<bool> b; //convert number into bit array
+    b.resize(n);
+    b[0] = 0;
+    for (int pos = n-1; pos >= 0; pos--) {
         if ((i & 1) == 1) {
             b[pos] = 1;
+        } else {
+            b[pos] = 0;
         }
         i = i >> 1;
     }
-    return b;
+    return &b;
 }
 
-vector<bool> int_to_bits(int i) {
+vector<bool>* int_to_bits(int i) {
     int copyI = i;
     int number_of_bits = 0;
     while (copyI > 0) {
         number_of_bits++;
         copyI = copyI >> 1;
     }
-    if (number_of_bits == 0) {
-        return zero;
-    }
+    if (number_of_bits == 0) number_of_bits++;
     return _int_to_bits(i, number_of_bits);
 }
 
-vector<bool> _rev_encode(vector<bool> code) {
-    int n = code.size();
-    if (n <= 1) return code;
-    new_vector = _rev_encode(int_to_bits(n-2));
-    new_vector.insert(new_vector.end(), code.begin(), code.end());
-    return new_vector;
+vector<bool> g1;
+vector<bool> g2;
+
+vector<bool>* rev_encode(int vec_id) {
+    vector<bool>* y = first;
+    vector<bool>* g = &g1;
+    if (vec_id == 2) {
+        y = second;
+        g = &g2;
+    }
+    y->insert(y->begin(), 1);
+    g->resize(1); g->at(0) = 0;
+
+    while (true) {
+        g->insert(g->begin(), y->begin(), y->end());
+        if (y->size() > 1) {
+            y = int_to_bits(y->size()-2);
+        } else {
+            break;
+        }
+    }
+    return g;
 }
 
-vector<bool> rev_encode(vector<bool> code) {
-    code.insert(code.begin(), 1);
-    code = _rev_encode(code);
-    code.push_back(0);
-    return code;
+vector<bool>* cw_encode(int idx, char c) {
+    first = int_to_bits(idx);
+    rev_encode(1);
+    second = int_to_bits(c);
+    rev_encode(2);
+    g1.insert(g1.end(), g2.begin(), g2.end());
+    return &g1;
 }
 
-vector<bool> cw_encode(int idx, char c) {
-    first = rev_encode(int_to_bits(idx));
-    second = rev_encode(int_to_bits(c));
-    first.insert(first.end(), second.begin(), second.end());
-    return first;
-}
-
-vector<bool> lz78_encode(string txt) {
+vector<bool> lz78_encode(string& txt) {
     txt += "$";
     int size = txt.length();
     DictNode* first = new DictNode(0, '$', true);
@@ -116,13 +131,14 @@ vector<bool> lz78_encode(string txt) {
             cur = cur->get_node(txt[i]);
         } else {
             new_code = cw_encode(cur->idx, txt[i]);
-            code.insert(code.end(), new_code.begin(), new_code.end());
+            code.insert(code.end(), new_code->begin(), new_code->end());
             cur->add_node(txt[i], d);
             d++;
             cur = first;
         }
         i++;
     }
+    txt.erase(txt.size()-1);
     return code;
 }
 
@@ -236,10 +252,10 @@ void tests() {
 }
 
 int main() {
-    //vector<bool> code = encode_file("big.txt");
+    tests();
+    vector<bool> code = encode_file("big.txt");
     //string decoded = decode_file("big.idx");
     //cout << decoded << endl;
-    tests();
     return 0;
 }
 
