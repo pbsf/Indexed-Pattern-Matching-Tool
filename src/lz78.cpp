@@ -13,10 +13,8 @@ using namespace std;
 //             faculty.kfupm.edu.sa/ICS/jauhar/ics202/Unit31_LZ78.ppt
 
 // Vector pointers used in the implementation
-vector<bool> zero(1);
 vector<bool>* first;
 vector<bool>* second;
-vector<bool> new_vector;
 vector<bool>* new_code;
 
 // Represents a Node in the Dictionary, which has a Trie's structure.
@@ -26,24 +24,23 @@ class DictNode {
     map<char, DictNode*> children;
 
    public:
-    int idx;
+    unsigned long int idx;
     char byte;
 
-    DictNode(int i, char c, bool isFirst) {
+    DictNode(unsigned long int i, char c, bool isFirst) {
         idx = i;
         byte = c;
         if (isFirst) {
             // Populating all ASCII chars below the first DictNode
-            //for (int c = 0; c < 256; c++) {
+            //for (unsigned int c = 0; c < 256; c++) {
                 //i++;
                 //add_node((char)c, i);
             //}
         }
     }
 
-    void add_node(char c, int new_idx) {
-        DictNode* new_node = new DictNode(new_idx, c, false);
-        children[c] = new_node;
+    void add_node(char c, unsigned long int new_idx) {
+        children[c] = new DictNode(new_idx, c, false);
     }
 
     bool has_node(char c) {
@@ -59,11 +56,9 @@ class DictNode {
 
 vector<bool> b;
 
-vector<bool>* _int_to_bits(int i, int n) {
-    //vector<bool> b; //convert number into bit array
+vector<bool>* _int_to_bits(unsigned int i, int n) {
     b.resize(n);
-    b[0] = 0;
-    for (int pos = n-1; pos >= 0; pos--) {
+    for (int pos = n-1; pos >= 0; --pos) {
         if ((i & 1) == 1) {
             b[pos] = 1;
         } else {
@@ -74,21 +69,21 @@ vector<bool>* _int_to_bits(int i, int n) {
     return &b;
 }
 
-vector<bool>* int_to_bits(int i) {
+vector<bool>* int_to_bits(unsigned int i) {
     int copyI = i;
-    int number_of_bits = 0;
+    unsigned int number_of_bits = 0;
     while (copyI > 0) {
-        number_of_bits++;
+        ++number_of_bits;
         copyI = copyI >> 1;
     }
-    if (number_of_bits == 0) number_of_bits++;
+    if (number_of_bits == 0) ++number_of_bits;
     return _int_to_bits(i, number_of_bits);
 }
 
 vector<bool> g1;
 vector<bool> g2;
 
-vector<bool>* rev_encode(int vec_id) {
+vector<bool>* rev_encode(unsigned int vec_id) {
     vector<bool>* y = first;
     vector<bool>* g = &g1;
     if (vec_id == 2) {
@@ -106,10 +101,11 @@ vector<bool>* rev_encode(int vec_id) {
             break;
         }
     }
+
     return g;
 }
 
-vector<bool>* cw_encode(int idx, char c) {
+vector<bool>* cw_encode(unsigned int idx, char c) {
     first = int_to_bits(idx);
     rev_encode(1);
     second = int_to_bits(c);
@@ -120,11 +116,11 @@ vector<bool>* cw_encode(int idx, char c) {
 
 vector<bool> lz78_encode(string& txt) {
     txt += "$";
-    int size = txt.length();
+    unsigned int size = txt.length();
     DictNode* first = new DictNode(0, '$', true);
     vector<bool> code;
-    int i = 0;
-    int d = 1;
+    unsigned long int i = 0;
+    unsigned long int d = 1;
     DictNode* cur = first;
     while (i < size) {
         if (cur->has_node(txt[i])) {
@@ -133,28 +129,28 @@ vector<bool> lz78_encode(string& txt) {
             new_code = cw_encode(cur->idx, txt[i]);
             code.insert(code.end(), new_code->begin(), new_code->end());
             cur->add_node(txt[i], d);
-            d++;
+            ++d;
             cur = first;
         }
-        i++;
+        ++i;
     }
     txt.erase(txt.size()-1);
     return code;
 }
 
-int vector_bool_to_int(vector<bool> v) {
-    int multiplier = 1;
-    int result = 0;
-    for (int i = v.size()-1; i >= 0; i--) {
+unsigned int vector_bool_to_int(vector<bool>& v) {
+    unsigned int multiplier = 1;
+    unsigned int result = 0;
+    for (int i = v.size()-1; i >= 0; --i) {
         result += multiplier * v[i];
         multiplier *= 2;
     }
     return result;
 }
 
-pair<int, int> cw_decode(vector<bool> v) {
-    int k = 1;
-    int j = 0;
+pair<int, int> cw_decode(vector<bool>& v) {
+    unsigned int k = 1;
+    unsigned int j = 0;
     vector<bool> Y;
     while (j == 0 || v[j] != 0) {
         vector<bool> temp(v.begin() + j, v.begin() + j + k);
@@ -170,13 +166,13 @@ pair<int, int> cw_decode(vector<bool> v) {
     return output;
 }
 
-string lz78_decode(vector<bool> v) {
+string lz78_decode(vector<bool>& v) {
     string txt = "";
     vector< pair<int, int> > D;
     D.push_back(make_pair(0,0));
-    int d = 1;
-    int i = 0;
-    int size = v.size();
+    unsigned int d = 1;
+    unsigned int i = 0;
+    unsigned int size = v.size();
     while (i < size) {
         vector<bool> Y(v.begin() + i, v.end());
         pair<int, int> p = cw_decode(Y);
@@ -193,21 +189,21 @@ string lz78_decode(vector<bool> v) {
     return txt.substr(0, txt.size()-1);
 }
 
-string decode_file(string filepath) {
+string decode_file(string& filepath) {
     ifstream infile (filepath, ifstream::binary);
     vector<bool> encoded;
     char c;
     while (infile.get(c)) {
-        for (int i = 0; i < 8; i++)
+        for (unsigned int i = 0; i < 8; ++i)
             encoded.push_back(((c >> i) & 1));
     }
     return lz78_decode(encoded);
 }
 
-vector<bool> encode_text(string text, string output_file) {
+vector<bool> encode_text(string& text, string& output_file) {
     vector<bool> encoded = lz78_encode(text);
     FILE *f = fopen(output_file.c_str(), "wb");
-    for (int i = 0; i < encoded.size(); i++)
+    for (unsigned int i = 0; i < encoded.size(); ++i)
         write_bit(encoded[i], f);
     close_file(f);
     return encoded;
@@ -225,7 +221,7 @@ vector<bool> encode_file(string filepath) {
     return encode_text(to_encode, idx_name);
 }
 
-void test(string txt) {
+void test(string& txt) {
     vector<bool> code = lz78_encode(txt);
     string output = lz78_decode(code);
     cout << "Input   string: " << txt << endl;
@@ -244,7 +240,7 @@ void tests() {
     tests.push_back("");
     tests.push_back(" ");
     tests.push_back("Break \n line \n test!");
-    for (vector<int>::size_type i = 0; i != tests.size(); i++) {
+    for (vector<int>::size_type i = 0; i != tests.size(); ++i) {
         cout << "Test #" << i+1 << endl;
         test(tests[i]);
         cout << endl;
@@ -252,8 +248,8 @@ void tests() {
 }
 
 int main() {
-    tests();
-    vector<bool> code = encode_file("big.txt");
+    //tests();
+    vector<bool> code = encode_file("proteins.50MB");
     //string decoded = decode_file("big.idx");
     //cout << decoded << endl;
     return 0;
