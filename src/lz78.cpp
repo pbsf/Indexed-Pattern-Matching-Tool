@@ -12,13 +12,22 @@ using namespace std;
 // References: https://docs.google.com/document/d/17rxbuMELIvZBUP_FGxQXGg0xCe-3d7vGUaQg1JDU3cw
 //             faculty.kfupm.edu.sa/ICS/jauhar/ics202/Unit31_LZ78.ppt
 
+// Vector pointers used in the implementation
+vector<bool> zero(1);
+vector<bool> first;
+vector<bool> second;
+vector<bool> new_vector;
+vector<bool> new_code;
 
 // Represents a Node in the Dictionary, which has a Trie's structure.
 class DictNode {
-  public:
+
+   private:
+    map<char, DictNode*> children;
+
+   public:
     int idx;
     char byte;
-    map<char, DictNode*> children;
 
     DictNode(int i, char c, bool isFirst) {
         idx = i;
@@ -66,14 +75,16 @@ vector<bool> int_to_bits(int i) {
         number_of_bits++;
         copyI = copyI >> 1;
     }
-    if (number_of_bits == 0) number_of_bits = 1;
+    if (number_of_bits == 0) {
+        return zero;
+    }
     return _int_to_bits(i, number_of_bits);
 }
 
 vector<bool> _rev_encode(vector<bool> code) {
     int n = code.size();
     if (n <= 1) return code;
-    vector<bool> new_vector = _rev_encode(int_to_bits(n-2));
+    new_vector = _rev_encode(int_to_bits(n-2));
     new_vector.insert(new_vector.end(), code.begin(), code.end());
     return new_vector;
 }
@@ -86,8 +97,8 @@ vector<bool> rev_encode(vector<bool> code) {
 }
 
 vector<bool> cw_encode(int idx, char c) {
-    vector<bool> first = rev_encode(int_to_bits(idx));
-    vector<bool> second = rev_encode(int_to_bits(c));
+    first = rev_encode(int_to_bits(idx));
+    second = rev_encode(int_to_bits(c));
     first.insert(first.end(), second.begin(), second.end());
     return first;
 }
@@ -96,7 +107,6 @@ vector<bool> lz78_encode(string txt) {
     txt += "$";
     int size = txt.length();
     DictNode* first = new DictNode(0, '$', true);
-    map<int, DictNode*> dict;
     vector<bool> code;
     int i = 0;
     int d = 1;
@@ -105,7 +115,7 @@ vector<bool> lz78_encode(string txt) {
         if (cur->has_node(txt[i])) {
             cur = cur->get_node(txt[i]);
         } else {
-            vector<bool> new_code = cw_encode(cur->idx, txt[i]);
+            new_code = cw_encode(cur->idx, txt[i]);
             code.insert(code.end(), new_code.begin(), new_code.end());
             cur->add_node(txt[i], d);
             d++;
@@ -136,7 +146,7 @@ pair<int, int> cw_decode(vector<bool> v) {
         j += k;
         k = vector_bool_to_int(Y) + 2;
     }
-    // TODO: Check what happens when this vector is empty.
+    // TODO: Check what happens when this vector is empty. Can that happen?
     vector<bool> voutput(Y.begin()+1, Y.end());
     pair<int, int> output;
     output.first = vector_bool_to_int(voutput);
@@ -175,7 +185,6 @@ string decode_file(string filepath) {
         for (int i = 0; i < 8; i++)
             encoded.push_back(((c >> i) & 1));
     }
-    // TODO: Check how long operation above takes for big files.
     return lz78_decode(encoded);
 }
 
@@ -218,7 +227,7 @@ void tests() {
     tests.push_back("a028H082G 2g08h08h02JG0J 240");
     tests.push_back("");
     tests.push_back(" ");
-    tests.push_back("_______________");
+    tests.push_back("Break \n line \n test!");
     for (vector<int>::size_type i = 0; i != tests.size(); i++) {
         cout << "Test #" << i+1 << endl;
         test(tests[i]);
@@ -227,8 +236,8 @@ void tests() {
 }
 
 int main() {
-    //vector<bool> code = encode_file("proteins.50MB");
-    //string decoded = decode_file("temp.idx");
+    //vector<bool> code = encode_file("big.txt");
+    //string decoded = decode_file("big.idx");
     //cout << decoded << endl;
     tests();
     return 0;
