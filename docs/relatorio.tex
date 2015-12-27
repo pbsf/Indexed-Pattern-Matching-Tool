@@ -1,0 +1,67 @@
+\documentclass[11pt]{article}
+\input{macros}
+\usepackage{xspace}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{relsize}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{mathtools}
+\usepackage{url}
+\urlstyle{same}  % (sf also works, for something more subtle than tt)
+\usepackage{color}
+\usepackage{graphicx}
+%% Colors
+\definecolor{darkred}{rgb}{0.5,0,0}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+\usepackage[bookmarks=false]{hyperref}
+\hypersetup{ colorlinks,
+  linkcolor=darkblue,
+  filecolor=darkgreen,
+  urlcolor=darkred,
+  citecolor=darkblue }
+
+\begin{document}
+
+\begin{center}
+UNIVERSIDADE FEDERAL DE PERNAMBUCO – UFPE\\
+CENTRO DE INFORMÁTICA – CIn\\[10\baselineskip]
+\end{center}
+
+\begin{center}
+Relatório do projeto da disciplina:\\
+Processamento de Cadeias de Caracteres
+(2015.2)\\[10\baselineskip]
+\end{center}
+Equipe:\\
+João Guilherme Farias Duda\\
+Paulo de Barros e Silva Filho\\
+Raul Maia Falcão\\[8\baselineskip]
+
+
+\begin{center}
+Recife, 3 de Janeiro de 2016
+\end{center}
+
+\cleardoublepage
+
+\tableofcontents
+
+\cleardoublepage
+\input{intro}
+
+\input{requirements}
+
+\input{description}
+
+\input{implementation}
+
+\input{experiments}
+
+\Urlmuskip=0mu plus 1mu\relax
+\bibliographystyle{abbrv}
+\bibliography{tmp}
+
+\end{document}
