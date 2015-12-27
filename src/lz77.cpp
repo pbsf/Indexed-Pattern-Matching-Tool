@@ -20,29 +20,78 @@ struct token{
 //bitset<BYTE_SIZE>* byte;
 int offset;
 int length;
-char* byte;
+char byte;
 };
 
 
 //TODO - Refactor to use bits and the bit_decompressor_tests
-vector<char> decompressor(const vector<token> &tokens){
-  vector<char> output;
+void decompressor(const vector<token>* tokens, vector<char>* output){
 
-  for(token t : tokens ){
+  output->clear();
+  int token_size = tokens->size();
+  for(int i = 0; i <  token_size; i++){
+    token t = tokens->at(i);
     if(!(t.offset == 0 || t.length == 0)){
-      int start_point = output.size() - t.offset;
+      int start_point = output->size() - t.offset;
       int end_point   = start_point + t.length;
       for(int i = start_point; i < end_point ; i++ ){
-        output.push_back(output[i]);
+        output->push_back(output->at(i));
       }
     }else{
-      output.push_back(*t.byte);
+      output->push_back(t.byte);
     }
 
   }
 
-  return output;
+}
 
+
+// tests
+
+void get_testToken(vector<token>* tokens){
+  tokens->clear();
+
+  char a = 'A';
+  char b = 'B';
+  char c = 'C';
+
+  token t1;
+  t1.offset = 0;
+  t1.length = 0;
+  t1.byte   = a;
+  tokens->push_back(t1);
+
+  token t2;
+  t2.offset = 1;
+  t2.length = 1;
+  tokens->push_back(t2);
+
+  token t3;
+  t3.offset = 0;
+  t3.length = 0;
+  t3.byte   = b;
+  tokens->push_back(t3);
+
+  token t4;
+  t4.offset = 0;
+  t4.length = 0;
+  t4.byte   = c;
+  tokens->push_back(t4);
+
+  token t5;
+  t5.offset = 2;
+  t5.length = 1;
+  tokens->push_back(t5);
+
+  token t6;
+  t6.offset = 1;
+  t6.length = 1;
+  tokens->push_back(t6);
+
+  token t7;
+  t7.offset = 5;
+  t7.length = 3;
+  tokens->push_back(t7);
 }
 
 void bit_decompressor_tests(){
@@ -102,59 +151,15 @@ void bit_decompressor_tests(){
 
 void char_decompressor_tests(){
   vector<token> tokens;
+  vector<char> output;
+  get_testToken(&tokens);
+  decompressor(&tokens, &output);
 
-  char a = 'A';
-  char b = 'B';
-  char c = 'C';
-
-  token t1;
-  t1.offset = 0;
-  t1.length = 0;
-  t1.byte   = &a;
-  tokens.push_back(t1);
-
-  token t2;
-  t2.offset = 1;
-  t2.length = 1;
-  t2.byte   = NULL;
-  tokens.push_back(t2);
-
-  token t3;
-  t3.offset = 0;
-  t3.length = 0;
-  t3.byte   = &b;
-  tokens.push_back(t3);
-
-  token t4;
-  t4.offset = 0;
-  t4.length = 0;
-  t4.byte   = &c;
-  tokens.push_back(t4);
-
-  token t5;
-  t5.offset = 2;
-  t5.length = 1;
-  t5.byte   = NULL;
-  tokens.push_back(t5);
-
-  token t6;
-  t6.offset = 1;
-  t6.length = 1;
-  t6.byte   = NULL;
-  tokens.push_back(t6);
-
-  token t7;
-  t7.offset = 5;
-  t7.length = 3;
-  t7.byte   = NULL;
-  tokens.push_back(t7);
-
-  vector<char> output = decompressor(tokens);
   string s_output = "";
   for(auto c:output){
     s_output += c;
   }
-
+  
   assert(s_output.compare("AABCBBABC") == 0);
 }
 
