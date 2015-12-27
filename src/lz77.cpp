@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <string.h>
 #include <cassert>
 
 using namespace std;
@@ -13,6 +14,8 @@ using namespace std;
 #define OFFSET_SIZE 12
 #define LENGTH_SIZE 6
 #define BYTE_SIZE 8
+#define LOOKAHEAD_SIZE 15
+#define WINDOW_SIZE 20
 
 struct token{
 //bitset<OFFSET_SIZE> offset;
@@ -23,6 +26,29 @@ int length;
 char byte;
 };
 
+void findLongestMatch(const string* input, int current_position, pair*<int,int> result){
+  int lookahead   = min (LOOKAHEAD_SIZE,input->size());
+  int window      = min (WINDOW_SIZE,input->size());
+  int end_buffer  = min(current_position + lookahead, input->size() + 1);
+  int offset      = -1;
+  int length      = -1;
+
+   for(int i = current_position + 2; i < end_buffer; i++){
+     start_index = max(0, current_position - window);
+     pair <int,int> substring_indexes = make_pair(current_position, i);
+
+     for(int l = start_index; l < current_position; l++){
+
+       auto repetitions = ( substring_indexes.second - substring_indexes.first ) /
+
+     }
+
+   }
+}
+
+void compressor(const string* input, vector<token>* tokens){
+  return;
+}
 
 //TODO - Refactor to use bits and the bit_decompressor_tests
 void decompressor(const vector<token>* tokens, vector<char>* output){
@@ -54,7 +80,7 @@ void get_testToken(vector<token>* tokens){
   char a = 'A';
   char b = 'B';
   char c = 'C';
-
+  char null_char =  '\0';
   token t1;
   t1.offset = 0;
   t1.length = 0;
@@ -64,6 +90,7 @@ void get_testToken(vector<token>* tokens){
   token t2;
   t2.offset = 1;
   t2.length = 1;
+  t2.byte   = null_char;
   tokens->push_back(t2);
 
   token t3;
@@ -81,17 +108,24 @@ void get_testToken(vector<token>* tokens){
   token t5;
   t5.offset = 2;
   t5.length = 1;
+  t5.byte   = null_char;
   tokens->push_back(t5);
 
   token t6;
   t6.offset = 1;
   t6.length = 1;
+  t5.byte   = null_char;
   tokens->push_back(t6);
 
   token t7;
   t7.offset = 5;
   t7.length = 3;
+  t7.byte   = null_char;
   tokens->push_back(t7);
+}
+
+string get_test_string(){
+  return "AABCBBABC";
 }
 
 void bit_decompressor_tests(){
@@ -149,6 +183,22 @@ void bit_decompressor_tests(){
 
 }
 
+/*void char_compressor_tests(){
+  vector<token> tokens;
+  vector<token> test_tokens;
+  get_testToken(&test_tokens);
+  string input = get_test_string();
+
+  compressor(&input,&tokens);
+
+  assert(tokens.size() == test_tokens.size());
+  for(int i = 0; i <  tokens.size(); i ++){
+    assert(tokens(i).offset == test_tokens(i).offset);
+    assert(tokens(i).length == test_tokens(i).length);
+    assert(tokens(i).byte == test_tokens(i).byte);
+  }
+}*/
+
 void char_decompressor_tests(){
   vector<token> tokens;
   vector<char> output;
@@ -159,16 +209,19 @@ void char_decompressor_tests(){
   for(auto c:output){
     s_output += c;
   }
-  
-  assert(s_output.compare("AABCBBABC") == 0);
+
+  assert(s_output.compare(get_test_string()) == 0);
 }
 
 void tests(){
+  //char_compressor_tests();
   char_decompressor_tests();
   return;
 }
 int main() {
-    tests();
+    //tests();
+    testt();
+    cout<< '\n' << "All tests passed";
     while(1){}
     return 0;
 }
