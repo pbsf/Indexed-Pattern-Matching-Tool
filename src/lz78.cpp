@@ -244,12 +244,12 @@ void tests() {
     }
 }
 
-int main() {
-    tests();
-    //vector<bool> code = encode_file("big.txt");
-    //string decoded = decode_file("big.idx");
-    //debug(decoded);
-    //cout << decoded << endl;
-    return 0;
-}
+//int main() {
+    //tests();
+    ////vector<bool> code = encode_file("big.txt");
+    ////string decoded = decode_file("big.idx");
+    ////debug(decoded);
+    ////cout << decoded << endl;
+    //return 0;
+//}
 
