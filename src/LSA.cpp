@@ -66,8 +66,8 @@ class SuffixArray{
 		int c=0;
 		
 
-		while (compS1!=ranksS1.size() && compS2!=ranksS2.size()){
-			if(ranksS1[compS1].suffix<=ranksS2[compS2].suffix){
+		while (compS1 != ranksS1.size() && compS2 != ranksS2.size()){
+			if(ranksS1[compS1].suffix <= ranksS2[compS2].suffix){
 				lista.push_back(ranksS1[compS1].rank);		
 				compS1++;
 			}else{
@@ -77,13 +77,13 @@ class SuffixArray{
 
 			}
 		}
-		if (compS2==this->ranksS2.size()){
-			for(int i=compS1;i<ranksS1.size();i++){
+		if (compS2 == this->ranksS2.size()){
+			for(int i = compS1; i<ranksS1.size(); i++){
 				lista.push_back(ranksS1[i].rank);
 
 			}
 		}else{
-			for(int i=compS2;i<ranksS2.size();i++){
+			for(int i = compS2; i<ranksS2.size(); i++){
 				lista.push_back(ranksS2[i].rank);
 			}
 		}
@@ -91,8 +91,8 @@ class SuffixArray{
 	int countMatches(string pat){
 		int patLen = pat.size();
 		int matches=0;
-		for(list<int>::iterator j=lista.begin(); j != lista.end(); ++j){
-			if(this->text->substr(*j,patLen)==pat){
+		for(list<int>::iterator j = lista.begin(); j != lista.end(); ++j){
+			if(this->text->substr(*j,patLen) == pat){
 				matches++;
 			}
 		}
