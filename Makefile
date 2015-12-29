@@ -1,6 +1,6 @@
 CPP_FILES := src/ipmt.cpp
 OBJ_FILES := $(addprefix bin/,$(notdir $(CPP_FILES:.cpp=.o)))
-CC_FLAGS += -MMD -w
+CC_FLAGS += -MMD -w -O3
 
 ipmt: $(OBJ_FILES)
 	g++ -o bin/$@ $^
