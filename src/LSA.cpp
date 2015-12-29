@@ -15,7 +15,7 @@ class SuffixArray{
 		}rs;
 		vector <_RS> ranksS1;
 		vector <_RS> ranksS2;
-		list<int> lista;
+		list<int> SA;
 	
 	SuffixArray(string *text){
 		this->text = text;
@@ -68,10 +68,10 @@ class SuffixArray{
 
 		while (compS1 != ranksS1.size() && compS2 != ranksS2.size()){
 			if(ranksS1[compS1].suffix <= ranksS2[compS2].suffix){
-				lista.push_back(ranksS1[compS1].rank);		
+				SA.push_back(ranksS1[compS1].rank);		
 				compS1++;
 			}else{
-				lista.push_back(ranksS2[compS2].rank);	
+				SA.push_back(ranksS2[compS2].rank);	
 				compS2++;
 				c++;
 
@@ -79,25 +79,29 @@ class SuffixArray{
 		}
 		if (compS2 == this->ranksS2.size()){
 			for(int i = compS1; i<ranksS1.size(); i++){
-				lista.push_back(ranksS1[i].rank);
+				SA.push_back(ranksS1[i].rank);
 
 			}
 		}else{
 			for(int i = compS2; i<ranksS2.size(); i++){
-				lista.push_back(ranksS2[i].rank);
+				SA.push_back(ranksS2[i].rank);
 			}
 		}
 	}
 	int countMatches(string pat){
 		int patLen = pat.size();
 		int matches=0;
-		for(list<int>::iterator j = lista.begin(); j != lista.end(); ++j){
+		for(list<int>::iterator j = SA.begin(); j != SA.end(); ++j){
 			if(this->text->substr(*j,patLen) == pat){
 				matches++;
 			}
 		}
 		printf("Matches = %d\n",matches );
 		return matches;
+	}
+
+	list<int> getSA(){
+		return SA;
 	}
 
 };
@@ -118,6 +122,7 @@ int main(){
 	SuffixArray sa = SuffixArray(&text);
 	sa.buildSA();
 	sa.countMatches(pat);
+	list<int> indexes = sa.getSA();
 
 	return 0;
 }
