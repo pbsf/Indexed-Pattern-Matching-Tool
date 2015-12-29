@@ -16,7 +16,7 @@ class SuffixArray{
 		vector <_RS> ranksS1;
 		vector <_RS> ranksS2;
 		list<int> lista;
-	
+
 	SuffixArray(string *text){
 		this->text = text;
 
@@ -25,11 +25,11 @@ class SuffixArray{
 		buildS1andS2();
 		mergeS1andS2();
 	}
-	static bool acompare(_RS lhs, _RS rhs) { 
+	static bool acompare(_RS lhs, _RS rhs) {
 		if (lhs.suffix.compare(rhs.suffix) == 0 ){
 			return lhs.rank > rhs.rank;
 		}else{
-			return lhs.suffix < rhs.suffix; 
+			return lhs.suffix < rhs.suffix;
 		}
 	}
 	void buildS1andS2(){
@@ -46,7 +46,7 @@ class SuffixArray{
 				ranksS1[counterS1].suffix = substr;
 				counterS1++;
 			}else{
-				string substr = this->text->substr(i,3);			
+				string substr = this->text->substr(i,3);
 				ranksS2.push_back(rs);
 				ranksS2[counterS2].rank =i ;
 				ranksS2[counterS2].suffix = substr;
@@ -64,14 +64,14 @@ class SuffixArray{
 		printf("%s\n","Merging Suffix Array S1 and S2 to SA" );
 
 		int c=0;
-		
+
 
 		while (compS1 != ranksS1.size() && compS2 != ranksS2.size()){
 			if(ranksS1[compS1].suffix <= ranksS2[compS2].suffix){
-				lista.push_back(ranksS1[compS1].rank);		
+				lista.push_back(ranksS1[compS1].rank);
 				compS1++;
 			}else{
-				lista.push_back(ranksS2[compS2].rank);	
+				lista.push_back(ranksS2[compS2].rank);
 				compS2++;
 				c++;
 
@@ -101,23 +101,23 @@ class SuffixArray{
 	}
 
 };
-int main(){
-
-	
-	ifstream infile;
-	infile.open("big.txt");
-	
-	string text;
-	for (string line; getline(infile, line);) {
-		text+=line;
-	}	
-
-	string pat = "herself";
+//int main(){
 
 
-	SuffixArray sa = SuffixArray(&text);
-	sa.buildSA();
-	sa.countMatches(pat);
+	//ifstream infile;
+	//infile.open("big.txt");
 
-	return 0;
-}
+	//string text;
+	//for (string line; getline(infile, line);) {
+		//text+=line;
+	//}
+
+	//string pat = "herself";
+
+
+	//SuffixArray sa = SuffixArray(&text);
+	//sa.buildSA();
+	//sa.countMatches(pat);
+
+	//return 0;
+//}
