@@ -3,6 +3,8 @@ using namespace std;
 #include <stdlib.h>
 #include <getopt.h>
 #include <iostream>
+#include "LSA.cpp"
+#include "lz78.cpp"
 /* ipmt command-line interface
    Reference: http://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Option-Example.html
 */
@@ -18,6 +20,7 @@ int searchmode = 0;
 char* pvalue = NULL;
 char* compvalue = NULL;
 char* idxvalue = NULL;
+
 // TODO:help_text below.
 string help_text = "HELP TEXT";
 
@@ -26,8 +29,9 @@ void print_help() {
     exit(0);
 }
 
-// TODO: This method will probably return a byte array to be compressed.
-void index(char* filename) {
+// TODO: This method will return the path to a file to be compressed.
+string index(char* filename) {
+    return filename; // TODO: remove this line.
     if (idxflag == 1) {
         if (!strcmp(idxvalue, "suffixtree")) {
             // TODO: Call suffix tree algorithm.
@@ -42,26 +46,16 @@ void index(char* filename) {
     }
 }
 
-void index_and_compress(char* filename) {
-    // TODO
-}
-
-void decompress_and_search(char* filename) {
-    // TODO
-}
-
 void search() {
     // TODO
 }
 
-void decompress() {
-    // TODO
-}
-
-void compress() {
+// This method returns the content of the decompressed file as a string.
+// TODO: Is it better to have this in a file instead?
+string decompress(string filepath) {
     if (compflag == 1) {
         if (!strcmp(compvalue, "lz78")) {
-            // TODO: Call lz78 algorithm.
+            return decode_file(filepath);
         } else if (!strcmp(compvalue, "lz77")) {
             // TODO: Call lz77 algorithm.
         } else {
@@ -69,8 +63,34 @@ void compress() {
             print_help();
         }
     } else {
-        // TODO: Call lz78
+        return decode_file(filepath);
     }
+}
+
+void compress(string filepath) {
+    if (compflag == 1) {
+        if (!strcmp(compvalue, "lz78")) {
+            encode_file(filepath);
+        } else if (!strcmp(compvalue, "lz77")) {
+            // TODO: Call lz77 algorithm.
+        } else {
+            printf("Unrecognized --compression argument: %s\n", compvalue);
+            print_help();
+        }
+    } else {
+        encode_file(filepath);
+    }
+}
+
+void index_and_compress(char* filename) {
+    string to_compress = index(filename);
+    encode_file(to_compress);
+}
+
+void decompress_and_search(char* filename) {
+    string decompressed_file_content = decompress(filename);
+    cout << decompressed_file_content << endl; // TODO: Remove this line
+    // TODO: Call search
 }
 
 int main (int argc, char **argv) {
@@ -132,10 +152,12 @@ int main (int argc, char **argv) {
         }
     }
 
-    if (compflag == 1) {
+    if (searchmode == 1) {
         decompress_and_search(argv[argc-1]);
-    } else if (idxflag == 1) {
+    } else if (indexmode == 1) {
         index_and_compress(argv[argc-1]);
+    } else {
+        printf("Unexpected block being called. What event is this?");
     }
     return 0;
 }

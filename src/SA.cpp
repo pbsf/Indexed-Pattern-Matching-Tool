@@ -14,11 +14,11 @@ class SuffixArray{
 		vector<int> sa;
 		vector<int> Llcp;
 		vector<int> Rlcp;
-		
+
 		SuffixArray(string text){
 			this->text = text;
 			this->n = text.size();
-			this->m = int(ceil(log(this->n))); 
+			this->m = int(ceil(log(this->n)));
 			this->sa.resize(n);
 			this->Llcp.resize(n);
 			this->Rlcp.resize(n);
@@ -30,17 +30,17 @@ class SuffixArray{
 			}
 			binarySearch(this->sa,p,0,this->n-1);
 			FILE *output = fopen("out.idx","w");
-			
+
 			for(int i=0; i<this->sa.size(); i++){
 				fprintf(output, "%d ",sa[i]);
 			}
-			fprintf(output, "\n");			
+			fprintf(output, "\n");
 
 			for(int i=0; i<this->Llcp.size(); i++){
 				fprintf(output, "%d ",Llcp[i]);
 			}
 			fprintf(output, "\n");
-			
+
 			for(int i=0; i<this->Rlcp.size(); i++){
 				fprintf(output, "%d ",Rlcp[i]);
 			}
@@ -53,7 +53,7 @@ class SuffixArray{
 		vector< vector<int> > buildP(){
 			vector< vector<int> > p;
 			p.resize(this->m+1);
-			
+
 			for(int i=0; i<=m; i++){
 				p[i].resize(this->n);
 			}
@@ -76,10 +76,10 @@ class SuffixArray{
 					}else{
 						triple[i][0] = p[k-1][i];
 						triple[i][1] = p[k-1][i+j];
-						triple[i][2] = i;	
+						triple[i][2] = i;
 					}
 				}
-			sort (triple.begin(), triple.end()); 
+			sort (triple.begin(), triple.end());
 			int v=1;
 			p[k][triple[0][2]] = v;
 
@@ -92,7 +92,7 @@ class SuffixArray{
 			}
 
 		}
-		return p;	
+		return p;
 	}
 
 	void binarySearch(vector<int>sa,vector< vector<int> > p,int begin,int end){
@@ -182,7 +182,7 @@ class SuffixArray{
 	int longestCommonPreffix(string text,string pat){
 		int i = 0;
 		int textSize = text.size();
-		int patSize = pat.size(); 
+		int patSize = pat.size();
 		while(text[i] == pat[i] && i < textSize && i < patSize){
 			i++;
 		}
@@ -191,24 +191,24 @@ class SuffixArray{
 
 };
 
-int main(){
-	//Para arquivo texto de entrada
-	
-	ifstream infile;
-	infile.open("test_file.txt");
+//int main(){
+	////Para arquivo texto de entrada
 
-	string text;
-	for (string line; getline(infile, line);) {
-		text+=line;
-	}
-	SuffixArray sa= SuffixArray(text);
-	sa.countMatches("Song");
-	
+	//ifstream infile;
+	//infile.open("test_file.txt");
 
-	//Testes com palavras
-	/*
-	string word=""
-	SuffixArray sa= SuffixArray(word);
-	*/
-	return 0;
-}
+	//string text;
+	//for (string line; getline(infile, line);) {
+		//text+=line;
+	//}
+	//SuffixArray sa= SuffixArray(text);
+	//sa.countMatches("Song");
+
+
+	////Testes com palavras
+	//[>
+	//string word=""
+	//SuffixArray sa= SuffixArray(word);
+	//*/
+	//return 0;
+//}
