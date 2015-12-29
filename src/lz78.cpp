@@ -45,7 +45,7 @@ class DictNode {
     }
 };
 
-vector<bool> b;
+vector<bool> b; // vector storing current _int_to_bits result.
 
 vector<bool>* _int_to_bits(unsigned int i, int n) {
     b.resize(n);
@@ -67,18 +67,11 @@ vector<bool>* int_to_bits(unsigned int i) {
     return _int_to_bits(i, number_of_bits);
 }
 
-vector<bool> g1;
-vector<bool> g2;
-
-vector<bool>* rev_encode(unsigned int vec_id) {
-    vector<bool>* y = first;
-    vector<bool>* g = &g1;
-    if (vec_id == 2) {
-        y = second;
-        g = &g2;
-    }
+vector<bool>* rev_encode(vector<bool>* y) {
+    vector<bool>* g = new vector<bool>;
+    g->reserve(48);
+    g->push_back(0);
     y->insert(y->begin(), 1);
-    g->resize(1); (*g)[0] = 0;
 
     while (true) {
         g->insert(g->begin(), y->begin(), y->end());
@@ -93,12 +86,10 @@ vector<bool>* rev_encode(unsigned int vec_id) {
 }
 
 vector<bool>* cw_encode(unsigned int idx, char c) {
-    first = int_to_bits(idx);
-    rev_encode(1);
-    second = int_to_bits(c);
-    rev_encode(2);
-    g1.insert(g1.end(), g2.begin(), g2.end());
-    return &g1;
+    first = rev_encode(int_to_bits(idx));
+    second = rev_encode(int_to_bits(c));
+    first->insert(first->end(), second->begin(), second->end());
+    return first;
 }
 
 vector<bool> lz78_encode(string& txt) {
@@ -183,7 +174,8 @@ string lz78_decode(vector<bool>& v) {
         D.push_back(make_pair(txt.size()-((D[p.first].second-D[p.first].first)+1), txt.size()));
         d += 1;
     }
-    return txt.substr(0, txt.size()-1); // Removes last char.
+    txt.erase(txt.size()-1);
+    return txt;
 }
 
 string decode_file(string filepath) {
@@ -219,11 +211,19 @@ vector<bool> encode_file(string filepath) {
 }
 
 void test(string& txt) {
-    vector<bool> code = lz78_encode(txt);
-    string output = lz78_decode(code);
+    remove("test.txt");
+    remove("test.idx");
+    ofstream out("test.txt");
+    out << txt;
+    out.close();
+
+    encode_file("test.txt");
+    string decoded = decode_file("test.idx");
     cout << "Input   string: " << txt << endl;
-    cout << "Decoded string: " << output << endl;
-    assert(txt == output);
+    cout << "Decoded string: " << decoded << endl;
+    //assert(txt == decoded);
+    remove("test.txt");
+    remove("test.idx");
 }
 
 void tests() {
