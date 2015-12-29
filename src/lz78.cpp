@@ -59,11 +59,7 @@ vector<bool> b;
 vector<bool>* _int_to_bits(unsigned int i, int n) {
     b.resize(n);
     for (int pos = n-1; pos >= 0; --pos) {
-        if ((i & 1) == 1) {
-            b[pos] = 1;
-        } else {
-            b[pos] = 0;
-        }
+        b[pos] = (i & 1) == 1;
         i = i >> 1;
     }
     return &b;
@@ -91,7 +87,7 @@ vector<bool>* rev_encode(unsigned int vec_id) {
         g = &g2;
     }
     y->insert(y->begin(), 1);
-    g->resize(1); g->at(0) = 0;
+    g->resize(1); (*g)[0] = 0;
 
     while (true) {
         g->insert(g->begin(), y->begin(), y->end());
@@ -248,8 +244,8 @@ void tests() {
 }
 
 int main() {
-    //tests();
-    vector<bool> code = encode_file("proteins.50MB");
+    tests();
+    //vector<bool> code = encode_file("proteins.50MB");
     //string decoded = decode_file("big.idx");
     //cout << decoded << endl;
     return 0;
