@@ -30,26 +30,17 @@ class DictNode {
     DictNode(unsigned long int i, char c, bool isFirst) {
         idx = i;
         byte = c;
-        if (isFirst) {
-            // Populating all ASCII chars below the first DictNode
-            //for (unsigned int c = 0; c < 256; c++) {
-                //i++;
-                //add_node((char)c, i);
-            //}
-        }
     }
 
     void add_node(char c, unsigned long int new_idx) {
         children[c] = new DictNode(new_idx, c, false);
     }
 
-    bool has_node(char c) {
-        return children.find(c) != children.end();
-    }
-
     DictNode* get_node(char c) {
         map<char, DictNode*>::iterator i = children.find(c);
-        assert(i != children.end());
+        if (i == children.end()) {
+            return NULL;
+        }
         return i->second;
     }
 };
@@ -119,8 +110,9 @@ vector<bool> lz78_encode(string& txt) {
     unsigned long int d = 1;
     DictNode* cur = first;
     while (i < size) {
-        if (cur->has_node(txt[i])) {
-            cur = cur->get_node(txt[i]);
+        DictNode* temp = cur->get_node(txt[i]);
+        if (temp != NULL) {
+            cur = temp;
         } else {
             new_code = cw_encode(cur->idx, txt[i]);
             code.insert(code.end(), new_code->begin(), new_code->end());
@@ -138,27 +130,38 @@ unsigned int vector_bool_to_int(vector<bool>& v) {
     unsigned int multiplier = 1;
     unsigned int result = 0;
     for (int i = v.size()-1; i >= 0; --i) {
-        result += multiplier * v[i];
+        result += v[i] * multiplier;
         multiplier *= 2;
     }
     return result;
 }
 
-pair<int, int> cw_decode(vector<bool>& v) {
-    unsigned int k = 1;
-    unsigned int j = 0;
-    vector<bool> Y;
-    while (j == 0 || v[j] != 0) {
-        vector<bool> temp(v.begin() + j, v.begin() + j + k);
-        Y = temp;
-        j += k;
-        k = vector_bool_to_int(Y) + 2;
+unsigned int vector_bool_to_int(vector<bool>& v, int ini_pos, int final_pos) {
+    unsigned int multiplier = 1;
+    unsigned int result = 0;
+    for (int i = final_pos; i >= ini_pos; --i) {
+        result += v[i] * multiplier;
+        multiplier *= 2;
     }
-    // TODO: Check what happens when this vector is empty. Can that happen?
-    vector<bool> voutput(Y.begin()+1, Y.end());
+    return result;
+}
+
+pair<int, int> cw_decode(vector<bool>& v, int ini_pos) {
+    unsigned int k = 1;
+    unsigned int j = ini_pos;
+    unsigned int lastK = -1;
+    unsigned int lastJ = -1;
+    vector<bool> Y;
+    while (j == ini_pos || v[j] != 0) {
+        int temp = vector_bool_to_int(v, j, j+k-1);
+        lastJ = j;
+        j += k;
+        lastK = k;
+        k = temp + 2;
+    }
     pair<int, int> output;
-    output.first = vector_bool_to_int(voutput);
-    output.second = j+1;
+    output.first = vector_bool_to_int(v, lastJ+1, lastJ+lastK-1);
+    output.second = j+1-ini_pos;
     return output;
 }
 
@@ -170,22 +173,20 @@ string lz78_decode(vector<bool>& v) {
     unsigned int i = 0;
     unsigned int size = v.size();
     while (i < size) {
-        vector<bool> Y(v.begin() + i, v.end());
-        pair<int, int> p = cw_decode(Y);
+        pair<int, int> p = cw_decode(v, i);
         i += p.second;
         if (i >= size) break; // Necessary to avoid filling 0s in a byte.
-        vector<bool> Y2(v.begin() + i, v.end());
-        pair<int, int> p2 = cw_decode(Y2);
+        pair<int, int> p2 = cw_decode(v, i);
         i += p2.second;
         char c = p2.first;
         txt += txt.substr(D[p.first].first, D[p.first].second - D[p.first].first) + c;
         D.push_back(make_pair(txt.size()-((D[p.first].second-D[p.first].first)+1), txt.size()));
         d += 1;
     }
-    return txt.substr(0, txt.size()-1);
+    return txt.substr(0, txt.size()-1); // Removes last char.
 }
 
-string decode_file(string& filepath) {
+string decode_file(string filepath) {
     ifstream infile (filepath, ifstream::binary);
     vector<bool> encoded;
     char c;
@@ -232,7 +233,7 @@ void tests() {
     tests.push_back("aaa");
     tests.push_back("abracadabra");
     tests.push_back("shfda asd de12 $%!!@ -adsd");
-    tests.push_back("a028H082G 2g08h08h02JG0J 240");
+    tests.push_back("a028H082G 2g08h08h02JG0J 24011111111");
     tests.push_back("");
     tests.push_back(" ");
     tests.push_back("Break \n line \n test!");
@@ -245,8 +246,9 @@ void tests() {
 
 int main() {
     tests();
-    //vector<bool> code = encode_file("proteins.50MB");
+    //vector<bool> code = encode_file("big.txt");
     //string decoded = decode_file("big.idx");
+    //debug(decoded);
     //cout << decoded << endl;
     return 0;
 }
