@@ -134,41 +134,7 @@ class SuffixArray{
 		}
 
 	}
-	void radixSort(vector <_RS> a){
-		int i;
-		int arraySize = a.size();
-		const size_t sz = sizeof(a)/sizeof(a[0]);
-		int bucket[sz];
-		int maxVal = 0;
-		int digitPosition =1 ;
-		
-		for(i = 0; i < arraySize; i++) {
-			if(a[i].rank > maxVal) maxVal = a[i].rank;
-		}
-
-		int pass = 1;
-
-		while(maxVal/digitPosition > 0) {
-
-			int digitCount[10] = {0};
-
-			for(i = 0; i < arraySize; i++){
-				digitCount[a[i].rank/digitPosition%10]++;
-			}
-			
-			for(i = 1; i < 10; i++){
-				digitCount[i] += digitCount[i-1];
-			}
-			
-			for(i = arraySize - 1; i >= 0; i--){
-				bucket[--digitCount[a[i].rank/digitPosition%10]] = a[i].rank;
-			}
-			for(i = 0; i < arraySize; i++)
-				a[i].rank = bucket[i];
-
-			digitPosition *= 10;
-		}   
-	}
+	
 
 	int getMax(vector <_RS> arr, int n){
 	    int max = arr[0].rank;
