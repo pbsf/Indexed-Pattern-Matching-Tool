@@ -150,11 +150,11 @@ list<int> index_file(string filepath) {
     return sa->getSA();
 }
 
-int main(){
-    SuffixArray* sa = create_sa_from_file("big.txt");
-    sa->buildSA();
-    string pat = "herself";
-    sa->countMatches(pat);
-    list<int> indexes = sa->getSA();
-    return 0;
-}
+//int main(){
+    //SuffixArray* sa = create_sa_from_file("big.txt");
+    //sa->buildSA();
+    //string pat = "herself";
+    //sa->countMatches(pat);
+    //list<int> indexes = sa->getSA();
+    //return 0;
+//}
