@@ -55,9 +55,9 @@ class SuffixArray{
 				ranksS2[counterS2].suffix = substr;
 				counterS2++;
 			}
-		}
-		if(this->text->substr(i,1).compare("\n")==22){
-			lines.push_back(i);
+            if(text.substr(i,1).compare("\n")==22){
+                lines.push_back(i);
+            }
 		}
 		sort (ranksS1.begin(), ranksS1.end(), acompare);
 		sort (ranksS2.begin(), ranksS2.end(), acompare);
@@ -120,7 +120,7 @@ class SuffixArray{
 			int previousLine = lines[j-1];
 			if(occ[i]<currentLine){
 				if(!count(newLines.begin(),newLines.end(),currentLine)){
-					printf("%s\n",this->text->substr(previousLine+1,currentLine-previousLine).c_str() );
+					printf("%s\n",text.substr(previousLine+1,currentLine-previousLine).c_str() );
 					newLines.push_back(currentLine);
 				}
 				i++;
@@ -150,11 +150,11 @@ list<int> index_file(string filepath) {
     return sa->getSA();
 }
 
-//int main(){
-    //SuffixArray* sa = create_sa_from_file("big.txt");
-    //sa->buildSA();
-    //string pat = "herself";
-    //sa->countMatches(pat);
-    //list<int> indexes = sa->getSA();
-    //return 0;
-//}
+int main(){
+    SuffixArray* sa = create_sa_from_file("big.txt");
+    sa->buildSA();
+    string pat = "herself";
+    sa->countMatches(pat);
+    list<int> indexes = sa->getSA();
+    return 0;
+}
