@@ -25,7 +25,7 @@ char* idxvalue = NULL;  // Index value (tree or array)
 const char *help_text = "There are two possible use cases of ipmt. The first case indexes a file in a compressed archive: \n"
                     "   ipmt index [--compression=COMPRESSION_ALG, --indextype=INDEX_ALG] filepath\n"
                     "The second case searches for a text pattern in the indexed file:\n"
-                    "   ipmt search [-c, --compression=COMPRESSION_ALG, --indextype=INDEX_ALGO] pattern\n";
+                    "   ipmt search [--compression=COMPRESSION_ALG, --indextype=INDEX_ALG, -c] filepath --pattern=PATTERN\n";
 
 void print_help() {
     cout << help_text << endl;
@@ -55,7 +55,12 @@ void search(string filename, list<int>* idx_list) {
         } else if (!strcmp(idxvalue, "suffixarray")) {
             SuffixArray* sa = create_sa_from_file(filename);
             sa->SA = *idx_list;
-            cout << sa->countMatches(pvalue);
+            int count = sa->countMatches(pvalue);
+            if (cflag == 1) {
+                cout << count << endl;
+            } else {
+                sa->printMatches();
+            }
         } else {
             printf("Unrecognized --indextype argument: %s\n", idxvalue);
             print_help();
@@ -63,7 +68,12 @@ void search(string filename, list<int>* idx_list) {
     } else {
         SuffixArray* sa = create_sa_from_file(filename);
         sa->SA = *idx_list;
-        cout << sa->countMatches(pvalue);
+        int count = sa->countMatches(pvalue);
+        if (cflag == 1) {
+            cout << count << endl;
+        } else {
+            sa->printMatches();
+        }
     }
 }
 
@@ -108,11 +118,10 @@ void compress(string filepath) {
 
 void index_and_compress(string filename) {
     list<int> to_compress = index(filename);
-    cout << "creating index file in :" << filename << endl;
-    cout << "size: " << to_compress.size() << endl;
     // Finding new filename -> .txt extension
     size_t lastindex = filename.find_last_of(".");
     string new_name = filename.substr(0, lastindex) + ".idx";
+    cout << "Creating index file:" << new_name << endl;
     encode_index(to_compress, new_name);
 }
 

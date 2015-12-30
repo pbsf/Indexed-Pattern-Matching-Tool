@@ -23,6 +23,13 @@ class SuffixArray{
 
 	SuffixArray(string txt){
 		text = txt;
+        // TODO: Code below is too inefficient.
+        int size = text.length();
+		for(int i=0;i<size;i++){
+            if(text.substr(i,1).compare("\n")==0){
+                lines.push_back(i);
+            }
+		}
 	}
 
 	void buildSA(){
@@ -55,9 +62,6 @@ class SuffixArray{
 				ranksS2[counterS2].suffix = substr;
 				counterS2++;
 			}
-            if(text.substr(i,1).compare("\n")==0){
-                lines.push_back(i);
-            }
 		}
 		sort (ranksS1.begin(), ranksS1.end(), acompare);
 		sort (ranksS2.begin(), ranksS2.end(), acompare);
@@ -112,17 +116,16 @@ class SuffixArray{
 		sort(occ.begin(),occ.end());
 		int i = 0;
 		int j = 1;
-
 		vector<int> newLines;
 
 		while((i<countOcc) && (j<countLines)){
 			int currentLine = lines[j];
 			int previousLine = lines[j-1];
 			if(occ[i]<currentLine){
-				if(!count(newLines.begin(),newLines.end(),currentLine)){
-					printf("%s\n",text.substr(previousLine+1,currentLine-previousLine).c_str() );
+                if(!count(newLines.begin(),newLines.end(),currentLine)){
+					printf("%s",text.substr(previousLine+1,currentLine-previousLine).c_str() );
 					newLines.push_back(currentLine);
-				}
+                }
 				i++;
 			}else{
 				j++;
