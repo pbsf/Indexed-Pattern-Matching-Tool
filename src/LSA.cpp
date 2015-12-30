@@ -101,7 +101,30 @@ class SuffixArray{
 		printf("Matches = %d\n",matches );
 		return matches;
 	}
+	void printMatches(){
+		int countOcc = occ.size();
+		int countLines = lines.size();
+		sort(occ.begin(),occ.end());
+		int i = 0;
+		int j = 1;
 
+		vector<int> newLines;
+
+		while((i<countOcc) && (j<countLines)){
+			int currentLine = lines[j];
+			int previousLine = lines[j-1];
+			if(occ[i]<currentLine){
+				if(!count(newLines.begin(),newLines.end(),currentLine)){
+					printf("%s\n",this->text->substr(previousLine+1,currentLine-previousLine).c_str() );
+					newLines.push_back(currentLine);
+				}
+				i++;
+			}else{
+				j++;
+			}
+		}
+
+	}
 	list<int> getSA(){
 		return SA;
 	}
