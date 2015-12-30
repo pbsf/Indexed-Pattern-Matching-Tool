@@ -5,7 +5,7 @@ using namespace std;
 #include <iostream>
 #include "LSA.cpp"
 #include "lz78.cpp"
-#include <string.h>
+#include <cstring>
 /* ipmt command-line interface
    Reference: http://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Option-Example.html
 */
