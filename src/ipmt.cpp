@@ -17,9 +17,9 @@ int idxflag = 0; // --indextype
 int indexmode = 0;
 int searchmode = 0;
 
-char* pvalue = NULL;
-char* compvalue = NULL;
-char* idxvalue = NULL;
+char* pvalue = NULL;    // Pattern value (pattern) TODO: Handle list of patterns
+char* compvalue = NULL; // Compression value (lz77 or lz78)
+char* idxvalue = NULL;  // Index value (tree or array)
 
 // TODO:help_text below.
 string help_text = "HELP TEXT";
@@ -29,33 +29,10 @@ void print_help() {
     exit(0);
 }
 
-// TODO: This method will return the path to a file to be compressed.
-string index(char* filename) {
-    return filename; // TODO: remove this line.
-    if (idxflag == 1) {
-        if (!strcmp(idxvalue, "suffixtree")) {
-            // TODO: Call suffix tree algorithm.
-        } else if (!strcmp(idxvalue, "suffixarray")) {
-            // TODO: Call suffix array algorithm.
-        } else {
-            printf("Unrecognized --indextype argument: %s\n", idxvalue);
-            print_help();
-        }
-    } else {
-        // TODO: Call either suffix tree or suffix array algorithm.
-    }
-}
-
-void search() {
-    // TODO
-}
-
-// This method returns the content of the decompressed file as a string.
-// TODO: Is it better to have this in a file instead?
-string decompress(string filepath) {
+list<int>* decompress(string filepath) {
     if (compflag == 1) {
         if (!strcmp(compvalue, "lz78")) {
-            return decode_file(filepath);
+            return decode_index(filepath);
         } else if (!strcmp(compvalue, "lz77")) {
             // TODO: Call lz77 algorithm.
         } else {
@@ -63,8 +40,54 @@ string decompress(string filepath) {
             print_help();
         }
     } else {
-        return decode_file(filepath);
+        return decode_index(filepath);
     }
+}
+
+// TODO: Currently only prints count. Must print all occuring lines like  grep.
+void search(string filename, list<int>* idx_list) {
+    if (idxflag == 1) {
+        if (!strcmp(idxvalue, "suffixtree")) {
+            // TODO: Call suffix tree algorithm.
+        } else if (!strcmp(idxvalue, "suffixarray")) {
+            SuffixArray* sa = create_sa_from_file(filename);
+            sa->SA = *idx_list;
+            cout << sa->countMatches(pvalue);
+        } else {
+            printf("Unrecognized --indextype argument: %s\n", idxvalue);
+            print_help();
+        }
+    } else {
+        SuffixArray* sa = create_sa_from_file(filename);
+        sa->SA = *idx_list;
+        cout << sa->countMatches(pvalue);
+    }
+}
+
+void decompress_and_search(string filename) {
+    list<int>* idx_list = decompress(filename);
+
+    // Finding new filename -> .txt extension
+    size_t lastindex = filename.find_last_of(".");
+    string new_name = filename.substr(0, lastindex) + ".txt";
+    search(new_name, idx_list);
+}
+
+list<int> index(string filename) {
+    cout << "1" << endl;
+    if (idxflag == 1) {
+        if (!strcmp(idxvalue, "suffixtree")) {
+            // TODO: Call suffix tree algorithm.
+        } else if (!strcmp(idxvalue, "suffixarray")) {
+            return index_file(filename);
+        } else {
+            printf("Unrecognized --indextype argument: %s\n", idxvalue);
+            print_help();
+        }
+    } else {
+        return index_file(filename);
+    }
+    cout << "foi" << endl;
 }
 
 void compress(string filepath) {
@@ -83,14 +106,8 @@ void compress(string filepath) {
 }
 
 void index_and_compress(char* filename) {
-    string to_compress = index(filename);
-    encode_file(to_compress);
-}
-
-void decompress_and_search(char* filename) {
-    string decompressed_file_content = decompress(filename);
-    cout << decompressed_file_content << endl; // TODO: Remove this line
-    // TODO: Call search
+    list<int> to_compress = index(filename);
+    encode_index(to_compress, filename);
 }
 
 int main (int argc, char **argv) {
@@ -153,7 +170,7 @@ int main (int argc, char **argv) {
     }
 
     if (searchmode == 1) {
-        decompress_and_search(argv[argc-1]);
+        decompress_and_search(string(argv[argc-1]));
     } else if (indexmode == 1) {
         index_and_compress(argv[argc-1]);
     } else {

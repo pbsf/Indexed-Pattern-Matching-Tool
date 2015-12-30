@@ -7,6 +7,7 @@ using namespace std;
 #include <sstream>
 #include <iterator>
 #include "util.cpp"
+#include <list>
 
 // LZ78
 // References: https://docs.google.com/document/d/17rxbuMELIvZBUP_FGxQXGg0xCe-3d7vGUaQg1JDU3cw
@@ -196,6 +197,25 @@ vector<bool> encode_text(string& text, string& output_file) {
         write_bit(encoded[i], f);
     close_file(f);
     return encoded;
+}
+
+void encode_index(list<int> idx_list, string output_file) {
+    ostringstream s;
+    for(list<int>::iterator j = idx_list.begin(); j != idx_list.end(); ++j){
+        s << *j << " ";
+    }
+    string str = s.str();
+    encode_text(str, output_file);
+}
+
+list<int>* decode_index(string filepath) {
+    string decoded = decode_file(filepath);
+    list<int>* output = new list<int>;
+    string buf; // Have a buffer string
+    stringstream ss(decoded); // Insert the string into a stream
+    while (ss >> buf)
+        output->push_back(atoi(buf.c_str()));
+    return output;
 }
 
 vector<bool> encode_file(string filepath) {

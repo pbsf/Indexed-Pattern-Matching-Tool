@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <list>
 #include <iterator>
+#include <sstream>
+#include <iostream>
 using namespace std;
 
 class SuffixArray{
@@ -16,25 +18,25 @@ class SuffixArray{
 		vector <_RS> ranksS1;
 		vector <_RS> ranksS2;
 		list<int> SA;
-	
+
 	SuffixArray(string *text){
 		this->text = text;
 
 	}
+
 	void buildSA(){
 		buildS1andS2();
 		mergeS1andS2();
 	}
-	static bool acompare(_RS lhs, _RS rhs) { 
+	static bool acompare(_RS lhs, _RS rhs) {
 		if (lhs.suffix.compare(rhs.suffix) == 0 ){
 			return lhs.rank > rhs.rank;
 		}else{
-			return lhs.suffix < rhs.suffix; 
+			return lhs.suffix < rhs.suffix;
 		}
 	}
 	void buildS1andS2(){
 		int size = this->text->length();
-
 		int counterS1 = 0;
 		int counterS2 = 0;
 		printf("%s\n","Building Suffix Array S1 and S2" );
@@ -46,7 +48,7 @@ class SuffixArray{
 				ranksS1[counterS1].suffix = substr;
 				counterS1++;
 			}else{
-				string substr = this->text->substr(i,3);			
+				string substr = this->text->substr(i,3);
 				ranksS2.push_back(rs);
 				ranksS2[counterS2].rank =i ;
 				ranksS2[counterS2].suffix = substr;
@@ -64,14 +66,14 @@ class SuffixArray{
 		printf("%s\n","Merging Suffix Array S1 and S2 to SA" );
 
 		int c=0;
-		
+
 
 		while (compS1 != ranksS1.size() && compS2 != ranksS2.size()){
 			if(ranksS1[compS1].suffix <= ranksS2[compS2].suffix){
-				SA.push_back(ranksS1[compS1].rank);		
+				SA.push_back(ranksS1[compS1].rank);
 				compS1++;
 			}else{
-				SA.push_back(ranksS2[compS2].rank);	
+				SA.push_back(ranksS2[compS2].rank);
 				compS2++;
 				c++;
 
@@ -105,24 +107,33 @@ class SuffixArray{
 	}
 
 };
+
+SuffixArray* create_sa_from_file(string filepath) {
+    ifstream t(filepath);
+    stringstream buffer;
+    buffer << t.rdbuf();
+    string text = buffer.str();
+    return new SuffixArray(&text);
+}
+
+list<int> index_file(string filepath) {
+    SuffixArray* sa = create_sa_from_file(filepath);
+    sa->buildSA();
+    return sa->getSA();
+}
+
 int main(){
+    ifstream t("big.txt");
+    stringstream buffer;
+    buffer << t.rdbuf();
+    string text = buffer.str();
 
-	
-	ifstream infile;
-	infile.open("big.txt");
-	
-	string text;
-	for (string line; getline(infile, line);) {
-		text+=line;
-	}	
+    //SuffixArray* sa = create_sa_from_file("big.txt");
+    SuffixArray* sa = new SuffixArray(&text);
+    sa->buildSA();
+    string pat = "herself";
+    sa->countMatches(pat);
+    list<int> indexes = sa->getSA();
 
-	string pat = "herself";
-
-
-	SuffixArray sa = SuffixArray(&text);
-	sa.buildSA();
-	sa.countMatches(pat);
-	list<int> indexes = sa.getSA();
-
-	return 0;
+    return 0;
 }
