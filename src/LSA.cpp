@@ -10,7 +10,7 @@ using namespace std;
 
 class SuffixArray{
 	public:
-		string *text;
+		string text;
 		struct _RS {
 		   int rank;
 		   string suffix;
@@ -19,9 +19,8 @@ class SuffixArray{
 		vector <_RS> ranksS2;
 		list<int> SA;
 
-	SuffixArray(string *text){
-		this->text = text;
-
+	SuffixArray(string txt){
+		text = txt;
 	}
 
 	void buildSA(){
@@ -36,19 +35,19 @@ class SuffixArray{
 		}
 	}
 	void buildS1andS2(){
-		int size = this->text->length();
+		int size = text.length();
 		int counterS1 = 0;
 		int counterS2 = 0;
 		printf("%s\n","Building Suffix Array S1 and S2" );
 		for(int i=0;i<size;i++){
 			if(i%3!=0){
-				string substr = this->text->substr(i,3);
+				string substr = text.substr(i,3);
 				ranksS1.push_back(rs);
 				ranksS1[counterS1].rank = i;
 				ranksS1[counterS1].suffix = substr;
 				counterS1++;
 			}else{
-				string substr = this->text->substr(i,3);
+				string substr = text.substr(i,3);
 				ranksS2.push_back(rs);
 				ranksS2[counterS2].rank =i ;
 				ranksS2[counterS2].suffix = substr;
@@ -79,7 +78,7 @@ class SuffixArray{
 
 			}
 		}
-		if (compS2 == this->ranksS2.size()){
+		if (compS2 == ranksS2.size()){
 			for(int i = compS1; i<ranksS1.size(); i++){
 				SA.push_back(ranksS1[i].rank);
 
@@ -94,7 +93,7 @@ class SuffixArray{
 		int patLen = pat.size();
 		int matches=0;
 		for(list<int>::iterator j = SA.begin(); j != SA.end(); ++j){
-			if(this->text->substr(*j,patLen) == pat){
+			if(text.substr(*j,patLen) == pat){
 				matches++;
 			}
 		}
@@ -113,7 +112,7 @@ SuffixArray* create_sa_from_file(string filepath) {
     stringstream buffer;
     buffer << t.rdbuf();
     string text = buffer.str();
-    return new SuffixArray(&text);
+    return new SuffixArray(text);
 }
 
 list<int> index_file(string filepath) {
@@ -122,18 +121,11 @@ list<int> index_file(string filepath) {
     return sa->getSA();
 }
 
-int main(){
-    ifstream t("big.txt");
-    stringstream buffer;
-    buffer << t.rdbuf();
-    string text = buffer.str();
-
+//int main(){
     //SuffixArray* sa = create_sa_from_file("big.txt");
-    SuffixArray* sa = new SuffixArray(&text);
-    sa->buildSA();
-    string pat = "herself";
-    sa->countMatches(pat);
-    list<int> indexes = sa->getSA();
-
-    return 0;
-}
+    //sa->buildSA();
+    //string pat = "herself";
+    //sa->countMatches(pat);
+    //list<int> indexes = sa->getSA();
+    //return 0;
+//}

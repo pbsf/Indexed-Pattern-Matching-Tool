@@ -74,7 +74,6 @@ void decompress_and_search(string filename) {
 }
 
 list<int> index(string filename) {
-    cout << "1" << endl;
     if (idxflag == 1) {
         if (!strcmp(idxvalue, "suffixtree")) {
             // TODO: Call suffix tree algorithm.
@@ -87,7 +86,6 @@ list<int> index(string filename) {
     } else {
         return index_file(filename);
     }
-    cout << "foi" << endl;
 }
 
 void compress(string filepath) {
@@ -105,9 +103,14 @@ void compress(string filepath) {
     }
 }
 
-void index_and_compress(char* filename) {
+void index_and_compress(string filename) {
     list<int> to_compress = index(filename);
-    encode_index(to_compress, filename);
+    cout << "creating index file in :" << filename << endl;
+    cout << "size: " << to_compress.size() << endl;
+    // Finding new filename -> .txt extension
+    size_t lastindex = filename.find_last_of(".");
+    string new_name = filename.substr(0, lastindex) + ".idx";
+    encode_index(to_compress, new_name);
 }
 
 int main (int argc, char **argv) {
@@ -172,7 +175,7 @@ int main (int argc, char **argv) {
     if (searchmode == 1) {
         decompress_and_search(string(argv[argc-1]));
     } else if (indexmode == 1) {
-        index_and_compress(argv[argc-1]);
+        index_and_compress(string(argv[argc-1]));
     } else {
         printf("Unexpected block being called. What event is this?");
     }
