@@ -55,7 +55,7 @@ class SuffixArray{
 				ranksS2[counterS2].suffix = substr;
 				counterS2++;
 			}
-            if(text.substr(i,1).compare("\n")==22){
+            if(text.substr(i,1).compare("\n")==0){
                 lines.push_back(i);
             }
 		}
