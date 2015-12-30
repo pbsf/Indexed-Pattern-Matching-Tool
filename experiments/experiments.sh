@@ -1,24 +1,30 @@
 #!/bin/bash
 
+# Halts the script when a nonzero value is returned from a command.
+set -e
+
 RESULTS=experiments/results.txt
+NUMBER_OF_ITER=10
 
 function index_test {
-    echo "Indexing file $1 10 times took on average, in seconds:" >> $RESULTS
-    START=`date +%s`
-    for i in {1..10}; do bin/ipmt index $1; done
-    END=`date +%s`
-    TOTAL_TIME=$((END-START))
+    echo "Indexing file $1 $NUMBER_OF_ITER times took on average, in miliseconds:" >> $RESULTS
+    START=`gdate +%s%N`
+    for ((i=0; i<NUMBER_OF_ITER; i++)); do bin/ipmt index $1; done
+    END=`gdate +%s%N`
+    TOTAL_TIME=$(((END-START)/1000000))
+    TOTAL_TIME=$((TOTAL_TIME/NUMBER_OF_ITER))
     echo $TOTAL_TIME >> $RESULTS
     echo "" >> $RESULTS
 }
 
 
 function search_test {
-    echo "Searching for string $1 in file $2 10 times took on average, in seconds:" >> $RESULTS
-    START=`date +%s`
-    for i in {1..10}; do bin/ipmt search $2; done
-    END=`date +%s`
-    TOTAL_TIME=$((END-START))
+    echo "Searching for the string $1 in file $2 $NUMBER_OF_ITER times took on average, in miliseconds:" >> $RESULTS
+    START=`gdate +%s%N`
+    for ((i=0; i<NUMBER_OF_ITER; i++)); do bin/ipmt search -c $2 --pattern=$1; done
+    END=`gdate +%s%N`
+    TOTAL_TIME=$(((END-START)/1000000))
+    TOTAL_TIME=$((TOTAL_TIME/NUMBER_OF_ITER))
     echo $TOTAL_TIME >> $RESULTS
     echo "" >> $RESULTS
 }
@@ -29,5 +35,5 @@ rm -f $RESULTS
 make
 
 index_test big.txt
-search_test str big.idx
+search_test herself big.idx
 
