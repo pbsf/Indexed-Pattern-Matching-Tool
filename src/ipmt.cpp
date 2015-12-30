@@ -21,8 +21,11 @@ char* pvalue = NULL;    // Pattern value (pattern) TODO: Handle list of patterns
 char* compvalue = NULL; // Compression value (lz77 or lz78)
 char* idxvalue = NULL;  // Index value (tree or array)
 
-// TODO:help_text below.
-string help_text = "HELP TEXT";
+// TODO: inprove help_text below.
+const char *help_text = "There are two possible use cases of ipmt. The first case indexes a file in a compressed archive: \n"
+                    "   ipmt index [--compression=COMPRESSION_ALG, --indextype=INDEX_ALG] filepath\n"
+                    "The second case searches for a text pattern in the indexed file:\n"
+                    "   ipmt search [-c, --compression=COMPRESSION_ALG, --indextype=INDEX_ALGO] pattern\n";
 
 void print_help() {
     cout << help_text << endl;
