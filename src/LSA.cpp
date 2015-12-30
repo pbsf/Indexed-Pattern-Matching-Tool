@@ -139,7 +139,7 @@ class SuffixArray{
 };
 
 SuffixArray* create_sa_from_file(string filepath) {
-    ifstream t(filepath);
+    ifstream t(filepath.c_str());
     stringstream buffer;
     buffer << t.rdbuf();
     string text = buffer.str();
