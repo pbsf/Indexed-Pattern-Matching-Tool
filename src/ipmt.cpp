@@ -121,7 +121,7 @@ void index_and_compress(string filename) {
     // Finding new filename -> .txt extension
     size_t lastindex = filename.find_last_of(".");
     string new_name = filename.substr(0, lastindex) + ".idx";
-    cout << "Creating index file:" << new_name << endl;
+    cout << "Creating index file: " << new_name << endl;
     encode_index(to_compress, new_name);
 }
 

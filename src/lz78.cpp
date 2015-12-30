@@ -180,7 +180,7 @@ string lz78_decode(vector<bool>& v) {
 }
 
 string decode_file(string filepath) {
-    ifstream infile (filepath, ifstream::binary);
+    ifstream infile (filepath.c_str(), ifstream::binary);
     vector<bool> encoded;
     char c;
     while (infile.get(c)) {
@@ -219,7 +219,7 @@ list<int>* decode_index(string filepath) {
 }
 
 vector<bool> encode_file(string filepath) {
-    ifstream t(filepath);
+    ifstream t(filepath.c_str());
     stringstream buffer;
     buffer << t.rdbuf();
     string to_encode = buffer.str();
