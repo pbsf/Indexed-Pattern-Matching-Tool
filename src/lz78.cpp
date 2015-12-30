@@ -187,6 +187,7 @@ string decode_file(string filepath) {
         for (unsigned int i = 0; i < 8; ++i)
             encoded.push_back(((c >> i) & 1));
     }
+    infile.close();
     return lz78_decode(encoded);
 }
 
@@ -223,7 +224,7 @@ vector<bool> encode_file(string filepath) {
     stringstream buffer;
     buffer << t.rdbuf();
     string to_encode = buffer.str();
-
+    t.close();
     // Finding new filename -> .idx extension
     size_t lastindex = filepath.find_last_of(".");
     string idx_name = filepath.substr(0, lastindex) + ".idx";
