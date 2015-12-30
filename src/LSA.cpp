@@ -62,8 +62,10 @@ class SuffixArray{
 				counterS2++;
 			}
 		}
-		sort (ranksS1.begin(), ranksS1.end(), acompare);
-		sort (ranksS2.begin(), ranksS2.end(), acompare);
+		//sort (ranksS1.begin(), ranksS1.end(), acompare);
+		//sort (ranksS2.begin(), ranksS2.end(), acompare);
+		radixSort(ranksS1);
+		radixSort(ranksS2);
 
 	}
 
@@ -132,6 +134,41 @@ class SuffixArray{
 		}
 
 	}
+	void radixSort(vector <_RS> a){
+		int i;
+		int arraySize = a.size();
+		const size_t sz = sizeof(a)/sizeof(a[0]);
+		int bucket[sz];
+		int maxVal = 0;
+		int digitPosition =1 ;
+		
+		for(i = 0; i < arraySize; i++) {
+			if(a[i].rank > maxVal) maxVal = a[i].rank;
+		}
+
+		int pass = 1;
+
+		while(maxVal/digitPosition > 0) {
+
+			int digitCount[10] = {0};
+
+			for(i = 0; i < arraySize; i++){
+				digitCount[a[i].rank/digitPosition%10]++;
+			}
+			
+			for(i = 1; i < 10; i++){
+				digitCount[i] += digitCount[i-1];
+			}
+			
+			for(i = arraySize - 1; i >= 0; i--){
+				bucket[--digitCount[a[i].rank/digitPosition%10]] = a[i].rank;
+			}
+			for(i = 0; i < arraySize; i++)
+				a[i].rank = bucket[i];
+
+			digitPosition *= 10;
+		}   
+	}
 	list<int> getSA(){
 		return SA;
 	}
@@ -153,10 +190,10 @@ list<int> index_file(string filepath) {
 }
 
 //int main(){
-   //SuffixArray* sa = create_sa_from_file("big.txt");
-   //sa->buildSA();
-   //string pat = "herself";
-   //sa->countMatches(pat);
-   //sa->printMatches();
-   //return 0;
+//   SuffixArray* sa = create_sa_from_file("big.txt");
+//   sa->buildSA();
+//   string pat = "herself";
+//   sa->countMatches(pat);
+//   sa->printMatches();
+//   return 0;
 //}
