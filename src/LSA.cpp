@@ -13,20 +13,19 @@ class SuffixArray{
 		string text;
 		struct _RS {
 		   int rank;
-		   string suffix;
+		   string* suffix;
 		}rs;
-		vector <_RS> ranksS1;
-		vector <_RS> ranksS2;
+		vector<_RS> ranksS1;
+		vector<_RS> ranksS2;
 		list<int> SA;
-		vector <int> lines;
-		vector <int> occ;
+		vector<int> lines;
+		vector<int> occ;
 
 	SuffixArray(string txt){
 		text = txt;
-        // TODO: Code below is too inefficient.
         int size = text.length();
-		for(int i=0;i<size;i++){
-            if(text.substr(i,1).compare("\n")==0){
+		for (int i=0; i < size; i++) {
+            if (text[i] == '\n') {
                 lines.push_back(i);
             }
 		}
@@ -37,7 +36,7 @@ class SuffixArray{
 		mergeS1andS2();
 	}
 	static bool acompare(_RS lhs, _RS rhs) {
-		if (lhs.suffix.compare(rhs.suffix) == 0 ){
+		if (lhs.suffix->compare(*rhs.suffix) == 0 ){
 			return lhs.rank > rhs.rank;
 		}else{
 			return lhs.suffix < rhs.suffix;
@@ -53,13 +52,13 @@ class SuffixArray{
 				string substr = text.substr(i,3);
 				ranksS1.push_back(rs);
 				ranksS1[counterS1].rank = i;
-				ranksS1[counterS1].suffix = substr;
+				ranksS1[counterS1].suffix = &substr;
 				counterS1++;
 			}else{
 				string substr = text.substr(i,3);
 				ranksS2.push_back(rs);
 				ranksS2[counterS2].rank =i ;
-				ranksS2[counterS2].suffix = substr;
+				ranksS2[counterS2].suffix = &substr;
 				counterS2++;
 			}
 		}
@@ -154,10 +153,10 @@ list<int> index_file(string filepath) {
 }
 
 //int main(){
-    //SuffixArray* sa = create_sa_from_file("big.txt");
-    //sa->buildSA();
-    //string pat = "herself";
-    //sa->countMatches(pat);
-    //list<int> indexes = sa->getSA();
-    //return 0;
+   //SuffixArray* sa = create_sa_from_file("big.txt");
+   //sa->buildSA();
+   //string pat = "herself";
+   //sa->countMatches(pat);
+   //sa->printMatches();
+   //return 0;
 //}
