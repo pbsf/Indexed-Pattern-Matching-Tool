@@ -18,6 +18,8 @@ class SuffixArray{
 		vector <_RS> ranksS1;
 		vector <_RS> ranksS2;
 		list<int> SA;
+		vector <int> lines;
+		vector <int> occ;
 
 	SuffixArray(string txt){
 		text = txt;
@@ -53,6 +55,9 @@ class SuffixArray{
 				ranksS2[counterS2].suffix = substr;
 				counterS2++;
 			}
+		}
+		if(this->text->substr(i,1).compare("\n")==22){
+			lines.push_back(i);
 		}
 		sort (ranksS1.begin(), ranksS1.end(), acompare);
 		sort (ranksS2.begin(), ranksS2.end(), acompare);
@@ -95,12 +100,36 @@ class SuffixArray{
 		for(list<int>::iterator j = SA.begin(); j != SA.end(); ++j){
 			if(text.substr(*j,patLen) == pat){
 				matches++;
+				occ.push_back(*j);
 			}
 		}
 		printf("Matches = %d\n",matches );
 		return matches;
 	}
+	void printMatches(){
+		int countOcc = occ.size();
+		int countLines = lines.size();
+		sort(occ.begin(),occ.end());
+		int i = 0;
+		int j = 1;
 
+		vector<int> newLines;
+
+		while((i<countOcc) && (j<countLines)){
+			int currentLine = lines[j];
+			int previousLine = lines[j-1];
+			if(occ[i]<currentLine){
+				if(!count(newLines.begin(),newLines.end(),currentLine)){
+					printf("%s\n",this->text->substr(previousLine+1,currentLine-previousLine).c_str() );
+					newLines.push_back(currentLine);
+				}
+				i++;
+			}else{
+				j++;
+			}
+		}
+
+	}
 	list<int> getSA(){
 		return SA;
 	}
