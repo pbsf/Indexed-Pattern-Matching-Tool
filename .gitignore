@@ -41,3 +41,6 @@ bin/*
 *.bbl
 *.blg
 *.aux
+
+# ipmt
+*.idx
