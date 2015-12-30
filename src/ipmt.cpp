@@ -20,7 +20,7 @@ int searchmode = 0;
 
 char* pvalue = NULL;    // Filepath to a file containing patterns.
 char* compvalue = NULL; // Compression value (lz77 or lz78)
-char* idxvalue = NULL;  // Index value (tree or array)
+char* idxvalue = NULL;  // Index value (suffixtree or suffixarray)
 vector<string> patList; // List of patterns we are searching for.
 
 const char *help_text = "ipmt has two possible modes: index and search. The first mode indexes a file passed as argument\n"
@@ -158,7 +158,7 @@ void index_and_compress(string filename) {
 }
 
 int main (int argc, char **argv) {
-  int c;
+    int c;
     if (argc <= 2) {
         print_help();
     } else if (!strcmp(argv[1],"index")) {
@@ -180,7 +180,7 @@ int main (int argc, char **argv) {
           {0, 0, 0, 0}
         };
       /* getopt_long stores the option index here. */
-      int option_index = 0;
+        int option_index = 0;
 
       c = getopt_long (argc, argv, "p:cz:i:h",     // Having a ':' means that it expects an arg following.
                        long_options, &option_index);
@@ -233,7 +233,6 @@ int main (int argc, char **argv) {
         }
         decompress_and_search(string(argv[argc-1]));
     } else if (indexmode == 1) {
-        if (pvalue == NULL) pvalue = argv[argc-2];
         index_and_compress(string(argv[argc-1]));
     } else {
         printf("Unexpected block being called. What event is this?");
