@@ -21,7 +21,7 @@ function index_test {
 function search_test {
     echo "Searching for the string $1 in file $2 $NUMBER_OF_ITER times took on average, in miliseconds:" >> $RESULTS
     START=`gdate +%s%N`
-    for ((i=0; i<NUMBER_OF_ITER; i++)); do bin/ipmt search -c $2 --pattern=$1; done
+    for ((i=0; i<NUMBER_OF_ITER; i++)); do bin/ipmt search -c $1 $2; done
     END=`gdate +%s%N`
     TOTAL_TIME=$(((END-START)/1000000))
     TOTAL_TIME=$((TOTAL_TIME/NUMBER_OF_ITER))
