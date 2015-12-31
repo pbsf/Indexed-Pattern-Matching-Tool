@@ -134,7 +134,7 @@ class SuffixArray{
 		}
 
 	}
-	
+
 
 	int getMax(vector <_RS> arr, int n){
 	    int max = arr[0].rank;
@@ -179,6 +179,7 @@ SuffixArray* create_sa_from_file(string filepath) {
     stringstream buffer;
     buffer << t.rdbuf();
     string text = buffer.str();
+    t.close();
     return new SuffixArray(text);
 }
 
@@ -188,11 +189,11 @@ list<int> index_file(string filepath) {
     return sa->getSA();
 }
 
-int main(){
-   SuffixArray* sa = create_sa_from_file("big.txt");
-   sa->buildSA();
-   string pat = "herself";
-   sa->countMatches(pat);
-   sa->printMatches();
-   return 0;
-}
+//int main(){
+   //SuffixArray* sa = create_sa_from_file("big.txt");
+   //sa->buildSA();
+   //string pat = "herself";
+   //sa->countMatches(pat);
+   //sa->printMatches();
+   //return 0;
+//}
