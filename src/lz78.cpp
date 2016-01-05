@@ -200,25 +200,6 @@ vector<bool> encode_text(string& text, string& output_file) {
     return encoded;
 }
 
-void encode_index(list<int> idx_list, string output_file) {
-    ostringstream s;
-    for(list<int>::iterator j = idx_list.begin(); j != idx_list.end(); ++j){
-        s << *j << " ";
-    }
-    string str = s.str();
-    encode_text(str, output_file);
-}
-
-list<int>* decode_index(string filepath) {
-    string decoded = decode_file(filepath);
-    list<int>* output = new list<int>;
-    string buf; // Have a buffer string
-    stringstream ss(decoded); // Insert the string into a stream
-    while (ss >> buf)
-        output->push_back(atoi(buf.c_str()));
-    return output;
-}
-
 vector<bool> encode_file(string filepath) {
     ifstream t(filepath.c_str());
     stringstream buffer;

@@ -13,6 +13,21 @@ void debug(string msg) {
         cout << msg << endl;
 }
 
+void debug(int msg) {
+    if (DEBUG)
+        cout << msg << endl;
+}
+
+void debug(char msg) {
+    if (DEBUG)
+        cout << msg << endl;
+}
+
+void debug(char* msg) {
+    if (DEBUG)
+        cout << msg << endl;
+}
+
 void print_vector(vector<bool> b) {
     for (vector<bool>::const_iterator it = b.begin(); it != b.end(); it++) {
         cout << *it;
@@ -43,5 +58,15 @@ void flush_bits (FILE *f) {
 void close_file(FILE *f) {
     flush_bits(f);
     fclose(f);
+}
+
+// Source: http://stackoverflow.com/questions/2844817/how-do-i-check-if-a-c-string-is-an-int
+inline bool isInteger(const std::string & s) {
+   if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
+
+   char * p ;
+   strtol(s.c_str(), &p, 10) ;
+
+   return (*p == 0) ;
 }
 

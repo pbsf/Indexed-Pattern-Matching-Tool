@@ -55,8 +55,27 @@ void unsupported_operation(string s) {
     cout << endl << "Aborting due to unsupported operation: " << s << endl;
     exit(0);
 }
+pair<string, list<int>*> decode_index(string filepath) {
+    string decoded = decode_file(filepath);
+    stringstream f(decoded);
+    stringstream text;
+    string line;
+    getline(f, line);
+    int number_of_lines = atoi(line.c_str());
+    for (int i = 0; i < number_of_lines && getline(f, line); i++) {
+        text << line;
+        text << '\n';
+    }
+    list<int>* idx_list = new list<int>;
+    string buf; // Have a buffer string
+    while (f >> buf) {
+        if (isInteger(buf.c_str()))
+            idx_list->push_back(atoi(buf.c_str()));
+    }
+    return make_pair(text.str(), idx_list);
+}
 
-list<int>* decompress(string filepath) {
+pair<string, list<int>*> decompress(string filepath) {
     if (compflag == 1) {
         if (!strcmp(compvalue, "lz78")) {
             return decode_index(filepath);
@@ -70,18 +89,21 @@ list<int>* decompress(string filepath) {
     } else {
         return decode_index(filepath);
     }
-    return new list<int>;    // Unreachable code.
+    return make_pair("", new list<int>);    // Unreachable code.
 }
 
-void search(string filename, list<int>* idx_list, string pattern) {
+SuffixArray* sa = NULL; // Pointer to SA, to make sure it is not created more than once.
+void search(string text, list<int>* idx_list, string pattern) {
     cout << "Searching for pattern: " << pattern << endl;
     if (idxflag == 1) {
         if (!strcmp(idxvalue, "suffixtree")) {
             // TODO: Call suffix tree algorithm.
             unsupported_operation("Suffix tree search");
         } else if (!strcmp(idxvalue, "suffixarray")) {
-            SuffixArray* sa = create_sa_from_file(filename);
-            sa->SA = *idx_list;
+            if (sa == NULL) {
+                sa = new SuffixArray(text);
+                sa->SA = *idx_list;
+            }
             int count = sa->countMatches(pattern);
             if (cflag == 1) {
                 cout << "Count: " << count << endl;
@@ -93,8 +115,10 @@ void search(string filename, list<int>* idx_list, string pattern) {
             print_help();
         }
     } else {
-        SuffixArray* sa = create_sa_from_file(filename);
-        sa->SA = *idx_list;
+        if (sa == NULL) {
+            sa = new SuffixArray(text);
+            sa->SA = *idx_list;
+        }
         int count = sa->countMatches(pattern);
         if (cflag == 1) {
             cout << "Count: " << count << endl;
@@ -105,13 +129,9 @@ void search(string filename, list<int>* idx_list, string pattern) {
 }
 
 void decompress_and_search(string filename) {
-    list<int>* idx_list = decompress(filename);
-
-    // Finding new filename -> .txt extension
-    size_t lastindex = filename.find_last_of(".");
-    string new_name = filename.substr(0, lastindex) + ".txt";
+    pair<string, list<int>*> decompress_result = decompress(filename);
     for (int i = 0; i < patList.size(); ++i) {
-        search(new_name, idx_list, patList[i]);
+        search(decompress_result.first, decompress_result.second, patList[i]);
     }
 }
 
@@ -132,10 +152,39 @@ list<int> index(string filename) {
     return *(new list<int>); // Unreachable code.
 }
 
-void compress(string filepath, list<int>& to_compress) {
+unsigned int count_lines(const string& s) {
+    int newlines = 0;
+    int size = s.size();
+    for (int i = 0; i < size; i++ ) {
+        if (s[i] == '\n') {
+            newlines++;
+        }
+    }
+    return newlines;
+}
+
+void encode_index(list<int> idx_list, string output_file, string orig_file) {
+    ifstream t(orig_file.c_str());
+    stringstream buffer;
+    buffer << t.rdbuf();
+    const string &orig_text = buffer.str();
+    int size = count_lines(orig_text);
+    buffer.seekp(0);
+    buffer << size;
+    buffer << '\n';
+    buffer << orig_text;
+
+    for(list<int>::iterator j = idx_list.begin(); j != idx_list.end(); ++j){
+        buffer << *j << " ";
+    }
+    string str = buffer.str();
+    encode_text(str, output_file);
+}
+
+void compress(string filepath, list<int>& to_compress, string orig_file) {
     if (compflag == 1) {
         if (!strcmp(compvalue, "lz78")) {
-            encode_index(to_compress, filepath);
+            encode_index(to_compress, filepath, orig_file);
         } else if (!strcmp(compvalue, "lz77")) {
             // TODO: Call lz77 algorithm.
             unsupported_operation("lz77 compress");
@@ -144,7 +193,7 @@ void compress(string filepath, list<int>& to_compress) {
             print_help();
         }
     } else {
-        encode_index(to_compress, filepath);
+        encode_index(to_compress, filepath, orig_file);
     }
 }
 
@@ -154,7 +203,7 @@ void index_and_compress(string filename) {
     size_t lastindex = filename.find_last_of(".");
     string new_name = filename.substr(0, lastindex) + ".idx";
     cout << "Creating index file: " << new_name << endl;
-    compress(new_name, to_compress);
+    compress(new_name, to_compress, filename);
 }
 
 int main (int argc, char **argv) {
