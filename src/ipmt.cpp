@@ -15,33 +15,45 @@ int cflag = 0; // -c or --count
 int compflag = 0; // --compression
 int idxflag = 0; // --indextype
 
-int indexmode = 0;
-int searchmode = 0;
+// MODE:
+// < 1 or > 4 = unknown
+// 1 = index
+// 2 = search
+// 3 = compress
+// 4 = decompress
+int MODE = 0;
 
 char* pvalue = NULL;    // Filepath to a file containing patterns.
 char* compvalue = NULL; // Compression value (lz77 or lz78)
 char* idxvalue = NULL;  // Index value (suffixtree or suffixarray)
 vector<string> patList; // List of patterns we are searching for.
 
-const char *help_text = "ipmt has two possible modes: index and search. The first mode indexes a file passed as argument\n"
+const char *help_text = "ipmt has four possible modes: index, search, compress and decompress. The index mode indexes a file passed as argument\n"
                         "in a compressed file with an .idx extension: \n"
                     "   ipmt index [OPTIONS] textfile\n"
-                    "The second mode searches for a text pattern passed as argument in the indexed file passed as argument:\n"
+                    "The search mode searches for a text pattern passed as argument in the indexed file passed as argument:\n"
                     "   ipmt search [OPTIONS] pattern indexfile\n"
+                    "The compress mode compresses a file passed as argument: \n"
+                    "   ipmt compress [--compression=lz77,lz78] textfile\n"
+                    "The decompress mode decompresses a file passed as argument in a file with the same name but the .decompressed extension: \n"
+                    "   ipmt decompress [--compression=lz77,lz78] indexfile\n"
                     "\n"
                     "-------------------------------------------\n"
                     "Options:\n"
                     "-h, --help: Shows this.\n"
-                    "-p, --pattern: Can be used on the search mode to pass as argument the path to a file\n"
-                    "             containing a list of patterns.\n"
-                    "-c, --count: Can be used on the search mode to print only the number of occurrences\n"
+                    "-p, --pattern: Can only be used on the search mode to pass as argument the path to a file\n"
+                    "             containing a list of patterns. If this argument is used, no pattern should\n"
+                    "             be passed as argument before the indexfile.\n"
+                    "-c, --count: Can only be used on the search mode to print only the number of occurrences\n"
                     "             instead of all lines containing occurrences.\n"
                     "-z, --compression: Receives as argument either lz77 or lz78, the algorithm used for\n"
-                    "             compression/decompression. lz78 is the default.\n"
+                    "             compression/decompression. If a file is compressed by one of these\n"
+                    "             algorithms, it can only be decompressed by the same algorithm.\n"
+                    "             lz78 is the default.\n"
                     "-i, --indextype: Receives as argument either suffixtree or suffixarray, the algorithm\n"
                     "             used for indexing and matching. suffixarray is the default.\n"
                     "-------------------------------------------\n"
-                    "Example of index mode call for a file named file.txt:\n"
+                    "Example of a index mode call for a file named file.txt:\n"
                     "   ipmt index file.txt\n"
                     "Example of a search to the pattern \"herself\" in the indexed file above:\n"
                     "   ipmt search herself file.idx\n";
@@ -181,6 +193,29 @@ void encode_index(list<int> idx_list, string output_file, string orig_file) {
     encode_text(str, output_file);
 }
 
+void decode_f(string orig_file) {
+    string output = decode_file(orig_file);
+    ofstream out(orig_file + ".decoded");
+    out << output;
+    out.close();
+}
+
+void compress_file(string orig_file) {
+    if (compflag == 1) {
+        if (!strcmp(compvalue, "lz78")) {
+            encode_file(orig_file);
+        } else if (!strcmp(compvalue, "lz77")) {
+            // TODO: Call lz77 algorithm.
+            unsupported_operation("lz77 compress");
+        } else {
+            printf("Unrecognized --compression argument: %s\n", compvalue);
+            print_help();
+        }
+    } else {
+        encode_file(orig_file);
+    }
+}
+
 void compress(string filepath, list<int>& to_compress, string orig_file) {
     if (compflag == 1) {
         if (!strcmp(compvalue, "lz78")) {
@@ -211,9 +246,13 @@ int main (int argc, char **argv) {
     if (argc <= 2) {
         print_help();
     } else if (!strcmp(argv[1],"index")) {
-        indexmode = 1;
+        MODE = 1;
     } else if (!strcmp(argv[1], "search")) {
-        searchmode = 1;
+        MODE = 2;
+    } else if (!strcmp(argv[1], "compress")) {
+        MODE = 3;
+    } else if (!strcmp(argv[1], "decompress")) {
+        MODE = 4;
     } else {
         printf("Unexpected argument passed as input: '%s'\n", argv[0]);
         print_help();
@@ -265,7 +304,7 @@ int main (int argc, char **argv) {
         }
     }
 
-    if (searchmode == 1) {
+    if (MODE == 2) {
         if (pvalue == NULL) {
             // If no pattern file was passed as arg, consider the before-last
             // arg as the pattern.
@@ -281,8 +320,12 @@ int main (int argc, char **argv) {
             infile.close();
         }
         decompress_and_search(string(argv[argc-1]));
-    } else if (indexmode == 1) {
+    } else if (MODE == 1) {
         index_and_compress(string(argv[argc-1]));
+    } else if (MODE == 3) {
+        compress_file(string(argv[argc-1]));
+    } else if (MODE == 4) {
+        decode_f(string(argv[argc-1]));
     } else {
         printf("Unexpected block being called. What event is this?");
     }
