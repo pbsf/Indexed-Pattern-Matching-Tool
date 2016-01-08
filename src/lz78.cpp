@@ -68,8 +68,15 @@ vector<bool>* int_to_bits(unsigned int i) {
     return _int_to_bits(i, number_of_bits);
 }
 
-vector<bool>* rev_encode(vector<bool>* y) {
-    vector<bool>* g = new vector<bool>;
+vector<bool>* g1 = new vector<bool>;
+vector<bool>* g2 = new vector<bool>;
+
+vector<bool>* rev_encode(vector<bool>* y, int i) {
+    vector<bool>* g = g1;
+    if (i == 2) {
+        g = g2;
+    }
+    g->clear();
     g->reserve(48);
     g->push_back(0);
     y->insert(y->begin(), 1);
@@ -87,13 +94,14 @@ vector<bool>* rev_encode(vector<bool>* y) {
 }
 
 vector<bool>* cw_encode(unsigned int idx, char c) {
-    first = rev_encode(int_to_bits(idx));
-    second = rev_encode(int_to_bits(c));
+    first = rev_encode(int_to_bits(idx), 1);
+    second = rev_encode(int_to_bits(c), 2);
     first->insert(first->end(), second->begin(), second->end());
     return first;
 }
 
 vector<bool> lz78_encode(string& txt) {
+    cout << "Encoding file with size = " << txt.size() << " bytes." << endl;
     txt += "$";
     unsigned int size = txt.length();
     DictNode* first = new DictNode(0, '$', true);

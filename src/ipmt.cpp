@@ -32,11 +32,11 @@ const char *help_text = "ipmt has four possible modes: index, search, compress a
                         "in a compressed file with an .idx extension: \n"
                     "   ipmt index [OPTIONS] textfile\n"
                     "The search mode searches for a text pattern passed as argument in the indexed file passed as argument:\n"
-                    "   ipmt search [OPTIONS] pattern indexfile\n"
+                    "   ipmt search [-c, --pattern=FILE] pattern indexfile\n"
                     "The compress mode compresses a file passed as argument: \n"
                     "   ipmt compress [--compression=lz77,lz78] textfile\n"
                     "The decompress mode decompresses a file passed as argument in a file with the same name but the .decompressed extension: \n"
-                    "   ipmt decompress [--compression=lz77,lz78] indexfile\n"
+                    "   ipmt decompress indexfile\n"
                     "\n"
                     "-------------------------------------------\n"
                     "Options:\n"
@@ -67,7 +67,7 @@ void unsupported_operation(string s) {
     cout << endl << "Aborting due to unsupported operation: " << s << endl;
     exit(0);
 }
-pair<string, list<int>*> decode_index(string filepath) {
+pair<string, list<int>*> decode_index(string& filepath) {
     string decoded = decode_file(filepath);
     stringstream f(decoded);
     stringstream text;
@@ -87,7 +87,7 @@ pair<string, list<int>*> decode_index(string filepath) {
     return make_pair(text.str(), idx_list);
 }
 
-pair<string, list<int>*> decompress(string filepath) {
+pair<string, list<int>*> decompress(string& filepath) {
     if (compflag == 1) {
         if (!strcmp(compvalue, "lz78")) {
             return decode_index(filepath);
@@ -105,7 +105,7 @@ pair<string, list<int>*> decompress(string filepath) {
 }
 
 SuffixArray* sa = NULL; // Pointer to SA, to make sure it is not created more than once.
-void search(string text, list<int>* idx_list, string pattern) {
+void search(string& text, list<int>* idx_list, string& pattern) {
     cout << "Searching for pattern: " << pattern << endl;
     if (idxflag == 1) {
         if (!strcmp(idxvalue, "suffixtree")) {
@@ -140,14 +140,14 @@ void search(string text, list<int>* idx_list, string pattern) {
     }
 }
 
-void decompress_and_search(string filename) {
+void decompress_and_search(string& filename) {
     pair<string, list<int>*> decompress_result = decompress(filename);
     for (int i = 0; i < patList.size(); ++i) {
         search(decompress_result.first, decompress_result.second, patList[i]);
     }
 }
 
-list<int> index(string filename) {
+list<int> index(string& filename) {
     if (idxflag == 1) {
         if (!strcmp(idxvalue, "suffixtree")) {
             // TODO: Call suffix tree algorithm.
@@ -175,7 +175,7 @@ unsigned int count_lines(const string& s) {
     return newlines;
 }
 
-void encode_index(list<int> idx_list, string output_file, string orig_file) {
+void encode_index(list<int>& idx_list, string& output_file, string& orig_file) {
     ifstream t(orig_file.c_str());
     stringstream buffer;
     buffer << t.rdbuf();
@@ -193,14 +193,14 @@ void encode_index(list<int> idx_list, string output_file, string orig_file) {
     encode_text(str, output_file);
 }
 
-void decode_f(string orig_file) {
+void decode_f(string& orig_file) {
     string output = decode_file(orig_file);
     ofstream out(orig_file + ".decoded");
     out << output;
     out.close();
 }
 
-void compress_file(string orig_file) {
+void compress_file(string& orig_file) {
     if (compflag == 1) {
         if (!strcmp(compvalue, "lz78")) {
             encode_file(orig_file);
@@ -216,7 +216,7 @@ void compress_file(string orig_file) {
     }
 }
 
-void compress(string filepath, list<int>& to_compress, string orig_file) {
+void compress(string& filepath, list<int>& to_compress, string& orig_file) {
     if (compflag == 1) {
         if (!strcmp(compvalue, "lz78")) {
             encode_index(to_compress, filepath, orig_file);
@@ -232,12 +232,12 @@ void compress(string filepath, list<int>& to_compress, string orig_file) {
     }
 }
 
-void index_and_compress(string filename) {
+void index_and_compress(string& filename) {
     list<int> to_compress = index(filename);
     // Finding new filename -> .txt extension
     size_t lastindex = filename.find_last_of(".");
     string new_name = filename.substr(0, lastindex) + ".idx";
-    cout << "Creating index file: " << new_name << endl;
+    cout << "Compressing in file: " << new_name << endl;
     compress(new_name, to_compress, filename);
 }
 
@@ -303,7 +303,7 @@ int main (int argc, char **argv) {
               abort ();
         }
     }
-
+    string last_arg = string(argv[argc-1]);
     if (MODE == 2) {
         if (pvalue == NULL) {
             // If no pattern file was passed as arg, consider the before-last
@@ -319,13 +319,13 @@ int main (int argc, char **argv) {
             }
             infile.close();
         }
-        decompress_and_search(string(argv[argc-1]));
+        decompress_and_search(last_arg);
     } else if (MODE == 1) {
-        index_and_compress(string(argv[argc-1]));
+        index_and_compress(last_arg);
     } else if (MODE == 3) {
-        compress_file(string(argv[argc-1]));
+        compress_file(last_arg);
     } else if (MODE == 4) {
-        decode_f(string(argv[argc-1]));
+        decode_f(last_arg);
     } else {
         printf("Unexpected block being called. What event is this?");
     }
