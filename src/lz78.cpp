@@ -216,7 +216,7 @@ vector<bool> encode_file(string filepath) {
     t.close();
     // Finding new filename -> .idx extension
     size_t lastindex = filepath.find_last_of(".");
-    string idx_name = filepath.substr(0, lastindex) + ".idx";
+    string idx_name = filepath.substr(0, lastindex) + ".comp";
     return encode_text(to_encode, idx_name);
 }
 
@@ -228,7 +228,7 @@ void test(string& txt) {
     out.close();
 
     encode_file("test.txt");
-    string decoded = decode_file("test.idx");
+    string decoded = decode_file("test.comp");
     cout << "Input   string: " << txt << endl;
     cout << "Decoded string: " << decoded << endl;
     //assert(txt == decoded);

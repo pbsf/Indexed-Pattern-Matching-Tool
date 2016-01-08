@@ -195,7 +195,7 @@ void encode_index(list<int>& idx_list, string& output_file, string& orig_file) {
 
 void decode_f(string& orig_file) {
     string output = decode_file(orig_file);
-    ofstream out(orig_file + ".decoded");
+    ofstream out(orig_file + ".decomp");
     out << output;
     out.close();
 }
