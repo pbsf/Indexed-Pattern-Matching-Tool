@@ -1,0 +1,4 @@
+#!/bin/bash
+R --vanilla < comp_tax.r
+R --vanilla < time_comp.r
+
