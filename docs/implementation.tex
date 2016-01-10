@@ -19,8 +19,7 @@ todos os sufixos de uma cadeia. A implementação contém alguns truques
 para que a construção seja feita em tempo linear. Um desses truque é adicionar aos
 nós suffix links, também chamados como transições de falha ou fronteiras. Devido 
 ao alto consumo de memória ao gerar a árvore de sufixo, resolvemos deixar a feature
-de melhorar o gerenciamento de memória para o futuro. Segundo ~\cite{BogdanCraig} se o núcleo 
-da implementação for orientada a objeto, a árvore de sufixo apresenta efeitos indesejáveis
+de melhorar o gerenciamento de memória para o futuro. Por consequência não foi gerado os índices dos sufixos, mas existe a opção de busca exata retornando o número de ocorrências de um dado padrão. Segundo ~\cite{BogdanCraig} se o núcleo da implementação for orientada a objeto, a árvore de sufixo apresenta efeitos indesejáveis
 de memória fragmentada.
 
 \subsubsection{\lz}
@@ -42,6 +41,8 @@ para a etapa de merge (S1  U  S2 = SA)  de tal forma que o custo do merge é
 realizado em tempo linear. Após o merge, obtemos os índices devidamente
 ordenados.
 
+\subsubsection{\lst}
+Inicialmente na construção do \lst foi necessário criar um nó auxiliar ($\perp$) o qual possue transições de todas as letras do alfabeto para o nó inicial (root) que corresponde a uma cadeia vazia ($\varepsilon$). Após essa etapa, uma construção on-line é feita adicionando caracter por caracter a árvore através das funções $update$ e $canonize$. A função update transforma a árvore na iteração anterior em uma árvore na iteração corrente inserindo transições do caracter corrente a ser adicionado. A função $update$ utiliza a função $canonize$ e a função $test_and_split$ que testa se há ou não referência a um nó terminador. Ao final da função $update$ é retornado a referência do par do nó terminador. Após adicionar todos os caracteres a árvore de sufixo está devidamente montada e pronta para realizar buscas de padrões exatos.
 
 \subsubsection{\lz}
 \todo{Add text}
