@@ -1,2 +1,29 @@
-\section{DESCRICÃO DA FERRAMENTA IPMT}
+\section{Descrição de uso da ferramenta \ipmt}
 
+O projeto contém um arquivo Makefile. Após a execução do comando make, o
+executável \ipmt será gerado no diretório bin. A ferramenta \ipmt possui 4 modos
+de execução:
+
+\begin{itemize}
+
+\item Modo de indexação - \ipmt index file.txt
+
+    O comando acima irá criar o arquivo file.idx, que contém o conteúdo de
+    file.txt e que possibilita a realização de buscas.
+
+\item Modo de busca - \ipmt search -c herself file.idx
+
+    O comando acima irá listar a quantidade de ocorrência do padrão "herself"
+    encontradas no arquivo indexado file.idx. O argumento -c é opcional, caso
+    não informado todas as linhas contendo ocorrências serão impressas.
+
+\item Modo de compressão - \ipmt compress file.txt
+
+    O comando acima irá comprimir o arquivo file.txt em um arquivo file.comp.
+
+\item Modo de descompressão - \ipmt decompress file.comp
+
+    O comando acima irá descomprimir o arquivo file.comp em um arquivo
+    file.comp.decomp.
+
+\end{itemize}

@@ -1,2 +1,60 @@
-\section{DETALHES DE IMPLEMENTAÇÃO}
+\section{Implementação}
+\todo{Add some intro}
 
+\subsection{Descrição dos algoritmos implementados}
+
+\subsubsection{\lsa}
+O algoritmo de indexação  implementado teve como
+base~\cite{KarkkainenS03} para a construção em
+tempo linear de um array de sufixos. Em suma, o array de sufixos é um array de
+inteiros que armazena a permutação de n índices ordenados lexicograficamente,
+onde n é o tamanho do texto. Uma vez construído o array de sufixos, a
+complexidade da busca passa a ser linear com relação ao tamanho do padrão.
+
+\subsubsection{\lz}
+
+\todo{Add text}
+
+\subsection{Detalhes de implementação}
+\subsubsection{\lsa}
+
+Na construção do \lsa há uma etapa de criação de dois arrays de sufixos, S1 e S2.
+Seja index a posição de um caracter em um texto:  A função buildS1andS2 constrói
+o array de sufixo S1 que contém sufixos tal que index \% 3 = 0 e também constrói
+o array de sufixo S2 que contém sufixos tal que index \% 3 != 0. Após a
+construção de S1 e S2, estes são ordenados através de uma implementação do Radix
+Sort com o objetivo de otimizar essa etapa. Como o Radix Sort não faz
+comparações entre valores, nesse contexto, o seu desempenho é superior a um
+algoritmo de ordenação por comparação. A ordenação de S1 e S2 foi necessária
+para a etapa de merge (S1  U  S2 = SA)  de tal forma que o custo do merge é
+realizado em tempo linear. Após o merge, obtemos os índices devidamente
+ordenados.
+
+\subsubsection{\lz}
+\todo{Add text}
+
+\subsection{Descrição do formato .idx}
+
+A ferramenta ipmt gera e lê arquivos no formato .idx. Esse arquivo é gerado da
+seguinte forma para um arquivo de entrada file.txt:
+
+\begin{itemize}
+
+\item Primeiramente é gerado o \lsa a partir do conteúdo de file.txt.
+\item Após isso, conta-se o número de linhas de file.txt.
+\item É criado um novo arquivo com o seguinte contéudo:
+\begin{verbatim}
+            [Número de linhas contidas em file.txt]
+            [Conteúdo de file.txt]
+            [Elementos do LSA separados por um espaço]
+
+(Note que quebras de linha separam os elementos acima.)
+\end{verbatim}
+\item Esse novo arquivo é então comprimido usando o \lz, gerando o arquivo file.idx.
+
+\end{itemize}
+
+Na hora de ler o arquivo .idx, primeiro é realizada a descompressão. Através do
+resultado, a ferramenta sabe que a primeira linha contém o número de linhas do
+texto. Logo, as linhas seguintes são referentes ao LSA, que é utilizado pela
+busca.
