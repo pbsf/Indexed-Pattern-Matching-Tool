@@ -5,7 +5,7 @@ set -e
 
 RESULTS=experiments/results.txt
 COMP_TAX_CSV=experiments/comp_tax.csv
-TIME_CSV=experiments/time.csv
+TIME_CSV=experiments/time_comp.csv
 
 NUMBER_OF_ITER=10
 
@@ -22,15 +22,18 @@ function search {
 function compress {
     echo -n "LZ78: Compressing file $1 $NUMBER_OF_ITER times took on average, in miliseconds:" >> $RESULTS
     INI_SIZE=`du -k "$1" | cut -f1`
+    INI_SIZE=$(((INI_SIZE)/1000))
     aux "bin/ipmt compress " $1 "" complz78 $INI_SIZE
     COMP_FILE_NAME="${1%.*}.comp"
     SIZE=`du -k "$COMP_FILE_NAME" | cut -f1`
+    SIZE=$(((SIZE)/1000))
     echo "Compressed file has size, in kb: $SIZE" >> $RESULTS
     COMPRESSION_TAX=($INI_SIZE-$SIZE)/$INI_SIZE
     echo -n "Compression tax: " >> $RESULTS
     COMPRESSION_TAX=$(bc -l <<< "scale=2; $COMPRESSION_TAX")
     echo "$COMPRESSION_TAX" >> $RESULTS
     echo -n "$INI_SIZE $COMPRESSION_TAX " >> $COMP_TAX_CSV
+    rm $COMP_FILE_NAME
     compress_gzip $1
 }
 
@@ -65,7 +68,7 @@ function aux {
         END=`gdate +%s%N`
     fi
 
-    TOTAL_TIME=$(((END-START)/1000000))
+    TOTAL_TIME=$(((END-START)/1000000000))
     TOTAL_TIME=$((TOTAL_TIME/NUMBER_OF_ITER))
     echo $TOTAL_TIME >> $RESULTS
     if [ "$4" == "compgzip" ]; then
@@ -75,7 +78,7 @@ function aux {
     fi
 }
 
-function clean {
+function start_exp {
     rm -rf $RESULTS
     rm -rf $TIME_CSV
     rm -rf $COMP_TAX_CSV
@@ -83,11 +86,17 @@ function clean {
     echo "Size LZ78 Gzip" >> $TIME_CSV
 }
 
+function clean {
+    rm -rf arquivos/*.comp
+    rm -rf arquivos/*.decomp
+}
+
 # Main code below:
 cd ../
-clean
+start_exp
 make
 
+# Perform experiments here
 compress arquivos/100k.txt
 compress arquivos/200k.txt
 compress arquivos/300k.txt
@@ -96,3 +105,12 @@ compress arquivos/2mb.txt
 compress arquivos/3mb.txt
 compress arquivos/5mb.txt
 compress arquivos/10mb.txt
+compress arquivos/50mb.txt
+compress arquivos/100mb.txt
+compress arquivos/200mb.txt
+compress arquivos/300mb.txt
+compress arquivos/500mb.txt
+compress arquivos/1gb.txt
+
+# Clean-up
+clean
