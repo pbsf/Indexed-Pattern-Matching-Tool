@@ -72,12 +72,12 @@ código de saída tem somente um bit, usamos como estrutura de dados para guarda
 o código um vector de
 bool\footnote{\url{http://en.cppreference.com/w/cpp/container/vector_bool}}.
 Optamos por essa estrutura de dados pois ela possui uma otimização de espaço:
-Um bool em C++ ocupa 8 bits (ou 1 byte) de espaço na memória, porem um vetor de
+Um bool em C++ ocupa 8 bits (1 byte) de espaço na memória, porém um vector de
 bool usa somente 1 bit para cada elemento.
 
 Outra peculiaridade desse algorítmo é que pode ocorrer do arquivo descomprimido
 conter algum "lixo" no último byte. Isso acontece porque a escrita em arquivo só
-pode ser feita de byte em byte, porém o código gerado pelo \lz-encode possui uma
+pode ser feita de byte em byte, porém o código gerado pelo \lz-encode é uma
 sequência de bits. Caso o número de bits não seja um múltiplo de 8, o último
 byte precisa ser preenchido com uma sequência de 0s, o que pode alterar o último
 byte na hora da descompressão. Isso poderia ser contornado com alguma flag no
