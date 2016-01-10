@@ -1,5 +1,6 @@
 \section{Implementação}
-\todo{Add some intro}
+Todos os algoritmos foram implemetados em C++ por questões de eficiência. A
+implementação em Python feita em sala de aula foi usada como uma base inicial.
 
 \subsection{Descrição dos algoritmos implementados}
 
@@ -13,9 +14,25 @@ complexidade da busca passa a ser linear com relação ao tamanho do padrão.
 
 \subsubsection{\lz}
 
-\todo{Add text}
+O algoritmo de compressão \lz teve como base a implementação vista em sala de
+aula e descrita em~\cite{Storer:1987:DCM:42791}. O \lz utiliza um dicionário
+dinâmico explícito, onde a referência compreende um par composto pelo índice no
+dicionário e o caracter de mismatch.
+
+Durante a compressão (\lz-encode), o dicionário é criado dinâmicamente a cada
+mismatch. Junto com o dicionário, também é criado um código que representa a
+string que está sendo comprimida. O \lz-encode é linear de acordo
+com o tamanho da string que está sendo comprimida.
+
+O processo de descompressão (\lz-decode) recebe somente o código gerado durante
+a compressão, e é capaz de gerar o dicionário dinamicamente, bem como a string
+original que foi comprimida. O \lz-decode é linear de acordo com o tamanho do
+código recebido na entrada.
+
 
 \subsection{Detalhes de implementação}
+Abaixo descrevemos algumas decisões e peculiaridades de cada algoritmo.
+
 \subsubsection{\lsa}
 
 Na construção do \lsa há uma etapa de criação de dois arrays de sufixos, S1 e S2.
@@ -31,14 +48,34 @@ realizado em tempo linear. Após o merge, obtemos os índices devidamente
 ordenados.
 
 \subsubsection{\lz}
-\todo{Add text}
+O dicionário dinâmico possui uma estrutura de Trie: Cada nó mapeia um índice a
+somente um char, e possui nós descendentes de forma que o nó original e cada um
+de seus descendes forma uma sequência diferente de caracteres encontrada no
+texto.
+
+Usamos como alfabeto do código de saída o sistema binário. Como cada elemento do
+código de saída tem somente um bit, usamos como estrutura de dados para guardar
+o código um vector de
+bool\footnote{\url{http://en.cppreference.com/w/cpp/container/vector_bool}}.
+Optamos por essa estrutura de dados pois ela possui uma otimização de espaço:
+Um bool em C++ ocupa 8 bits (ou 1 byte) de espaço na memória, porem um vetor de
+bool usa somente 1 bit para cada elemento.
+
+Outra peculiaridade desse algorítmo é que pode ocorrer do arquivo descomprimido
+conter algum "lixo" no último byte. Isso acontece porque a escrita em arquivo só
+pode ser feita de byte em byte, porém o código gerado pelo \lz-encode possui uma
+sequência de bits. Caso o número de bits não seja um múltiplo de 8, o último
+byte precisa ser preenchido com uma sequência de 0s, o que pode alterar o último
+byte na hora da descompressão. Isso poderia ser contornado com alguma flag no
+início do arquivo comprimido, informando quantos bits devem ser descartados do
+último byte. Deixamos isso como trabalho futuro.
 
 \subsection{Descrição do formato .idx}
 
-A ferramenta ipmt gera e lê arquivos no formato .idx. Esse arquivo é gerado da
+A ferramenta \ipmt gera e lê arquivos no formato .idx. Esse arquivo é gerado da
 seguinte forma para um arquivo de entrada file.txt:
 
-\begin{itemize}
+\begin{enumerate}
 
 \item Primeiramente é gerado o \lsa a partir do conteúdo de file.txt.
 \item Após isso, conta-se o número de linhas de file.txt.
@@ -52,7 +89,7 @@ seguinte forma para um arquivo de entrada file.txt:
 \end{verbatim}
 \item Esse novo arquivo é então comprimido usando o \lz, gerando o arquivo file.idx.
 
-\end{itemize}
+\end{enumerate}
 
 Na hora de ler o arquivo .idx, primeiro é realizada a descompressão. Através do
 resultado, a ferramenta sabe que a primeira linha contém o número de linhas do

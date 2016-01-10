@@ -20,9 +20,12 @@ Todos os scripts e resultados estão disponíveis no diretório experiments.
 \subsection{\rqone}
 Nós comparamos a nossa implementação do LZ78 com o gzip em dois aspectos: Tempo
 e taxa de compressão.
-Para realizar essa comparação, nós escolhemos 11 arquivos de tamanhos distintos:
-100KB, 200KB, 300KB, 700KB, 1MB, 2MB, 3MB, 5MB, 50MB e 1GB.
-Todos os arquivos continham somente textos em inglês.
+Para realizar essa comparação, nós dividimos um arquivo\footnote{
+\url{http://pizzachili.dcc.uchile.cl/texts/nlang/english.1024MB.gz}}
+que contém 1GB de texto em inglês em arquivos de
+tamanhos distintos: 100KB, 200KB, 300KB, 700KB, 1MB, 2MB, 3MB, 5MB, 50MB, 100MB,
+200MB, 300MB e 500MB. Cada arquivo desse contém os primeiros n bytes do
+arquivo original, onde n é o tamanho do arquivo.
 
 \subsubsection{Tempo}
 
