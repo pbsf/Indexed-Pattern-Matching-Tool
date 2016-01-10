@@ -11,6 +11,18 @@ inteiros que armazena a permutação de n índices ordenados lexicograficamente,
 onde n é o tamanho do texto. Uma vez construído o array de sufixos, a
 complexidade da busca passa a ser linear com relação ao tamanho do padrão.
 
+\subsubsection{\lst}
+O algoritmo de indexação implementado teve como
+base ~\cite{UkkonenST} para a construção em tempo linear
+de uma árvore de sufixos. A estrutura implementada representa
+todos os sufixos de uma cadeia. A implementação contém alguns truques
+para que a construção seja feita em tempo linear. Um desses truque é adicionar aos
+nós suffix links, também chamados como transições de falha ou fronteiras. Devido 
+ao alto consumo de memória ao gerar a árvore de sufixo, resolvemos deixar a feature
+de melhorar o gerenciamento de memória para o futuro. Segundo ~\cite{BogdanCraig} se o núcleo 
+da implementação for orientada a objeto, a árvore de sufixo apresenta efeitos indesejáveis
+de memória fragmentada.
+
 \subsubsection{\lz}
 
 \todo{Add text}
@@ -29,6 +41,7 @@ algoritmo de ordenação por comparação. A ordenação de S1 e S2 foi necessá
 para a etapa de merge (S1  U  S2 = SA)  de tal forma que o custo do merge é
 realizado em tempo linear. Após o merge, obtemos os índices devidamente
 ordenados.
+
 
 \subsubsection{\lz}
 \todo{Add text}
