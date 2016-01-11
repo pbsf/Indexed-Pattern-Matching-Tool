@@ -74,7 +74,8 @@ pair<string, list<int>*> decode_index(string& filepath) {
     string line;
     getline(f, line);
     int number_of_lines = atoi(line.c_str());
-    for (int i = 0; i < number_of_lines && getline(f, line); i++) {
+    for (int i = 0; i < number_of_lines; ++i) {
+        getline(f, line);
         text << line;
         text << '\n';
     }
@@ -180,12 +181,12 @@ void encode_index(list<int>& idx_list, string& output_file, string& orig_file) {
     stringstream buffer;
     buffer << t.rdbuf();
     const string &orig_text = buffer.str();
-    int size = count_lines(orig_text);
+    int size = count_lines(orig_text)+1;
     buffer.seekp(0);
     buffer << size;
     buffer << '\n';
     buffer << orig_text;
-
+    buffer << '\n';
     for(list<int>::iterator j = idx_list.begin(); j != idx_list.end(); ++j){
         buffer << *j << " ";
     }
