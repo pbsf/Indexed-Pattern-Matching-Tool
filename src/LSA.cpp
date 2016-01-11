@@ -102,12 +102,15 @@ class SuffixArray{
 	int countMatches(string pat){
 		int patLen = pat.size();
 		int matches=0;
+//std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 		for(list<int>::iterator j = SA.begin(); j != SA.end(); ++j){
 			if(text.substr(*j,patLen) == pat){
 				matches++;
 				occ.push_back(*j);
 			}
 		}
+//std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
+//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() <<std::endl;
 		printf("Matches = %d\n",matches );
 		return matches;
 	}
