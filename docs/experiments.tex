@@ -78,20 +78,45 @@ desenvolvimento a muito mais tempo e por isso possui mais otimizações.
 Para responder à essa pergunta nós utilizamos a ferramenta \ipmt para criar um
 índice de um arquivo de texto. Após isso comparamos o tempo de realizar buscas
 de diversos padrões utilizando \ipmt no arquivo indexado e comparando com o
-tempo para pesquisar os padrões utilizando grep no texto original.
+tempo para pesquisar os padrões utilizando grep no texto original. O tempo
+que leva para criar o \lsa foi desconsiderado.
 
 Nós consideramos somente o arquivo de 50MB pelo seguinte motivo: O arquivo .idx
 gerado pela ferramenta \ipmt possui ambos o texto original e o índice
 comprimidos. Acontece que o array do nosso LSA tem, em média, quase 10 vezes o
 tamanho do arquivo original. Ou seja, indexar e comprimir um arquivo de 50MB
 acaba se tornando uma tarefa de comprimir um arquivo de aproximadamente 500MB,
-que dura pouco mais de 4 minutos. Nesse caso, nossa compressão criou um arquivo
-.idx de 341MB, onde as buscas serão realizadas. Indexar e comprimir arquivos
-maiores do que 50MB é uma tarefa custosa para nossas implementações.
+que dura entre 3 e 4 minutos no nosso ambiente de experimentos. Nesse caso,
+nossa compressão criou um arquivo .idx de 341MB, onde as buscas serão realizadas.
+Indexar arquivos maiores do que 50MB é uma tarefa factível, mas
+custosa e demorada nas nossas implementações.
 
+Geramos randomicamente 1000 padrões: 10 padrões com tamanho de cada valor
+entre 1 e 100 incluso. Após isso, realizamos a medição de tempo que o grep e
+que o \ipmt levaram para buscar por esses padrões no arquivo de 50MB.
+Consideramos a média entre 10 execuções de cada ferramenta. O
+resultado está na figura abaixo:
+\\
+\includegraphics[scale=0.74]{../experiments/R/pdf/rq2}
+\\
 
+Podemos ver que \ipmt se saiu melhor na maioria dos casos. Isso era esperado
+devido ao pré-processamento da indexação. Podemos também observar que
+o tempo de resposta do grep variou independente do tamanho do padrão. Já no
+\ipmt pode-se observar que quanto maior o padrão mais demorada tende a ser a
+resposta. Dado que o arquivo observado foi de 50MB, para um arquivo maior do que
+esse, \ipmt tende a se sair melhor ainda em relação ao grep, visto que ele varia
+de acordo com o tamanho do padrão, enquanto que o grep varia de acordo com o
+tamanho do texto.
 
 \subsection{\rqthree}
+Realizamos o mesmo experimento da seção anterior, porém comparando a ferramenta
+\ipmt ao codesearch. Os resultados estão abaixo:
+\\
+\includegraphics[scale=0.74]{../experiments/R/pdf/rq3}
+\\
 
-\todo{add text}
+Visto que as médias que foram consideradas, o codesearch se saiu melhor que o
+\ipmt em todos os casos.
+
 
