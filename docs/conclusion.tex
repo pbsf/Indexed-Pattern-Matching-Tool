@@ -1,0 +1,22 @@
+\section{Conclusão}
+
+Nesse relatório foi apresentada a ferramenta \ipmt, capaz de indexar e comprimir
+um arquivo, possiblitando buscas cujo tempo varia linearmente com o tamanho do
+padrão.
+
+Como esperado, conseguimos obter resultados melhores do que a ferramenta
+grep, porém ainda existem pontos onde a ferramenta pode melhorar para ficar tão
+eficiente quanto o codesearch.
+
+Por exemplo, no método de contar os matches
+poderia ser implementado uma busca binária em dois estágios, um que busca a
+primeira ocorrência e outra que busca a última ocorrência. Logo o número de
+ocorrências seria a substração entre a última e a primeira ocorrência.
+Além disso, atualmente o array do LSA é transformado em uma sequência de
+caracteres separados por um espaço. Ou seja, o array com objetos [1, 5, 10] será
+transformado na string "1 5 10". Note que cada algarismo está utilizando um byte
+para ser representado, porém sabemos que cada algarismo vai variar entre 0 e 9,
+então na verdade precisamos somente de 4 bits para representar cada um,
+possivelmente melhorando a taxa de compressão após a indexação.
+
+Deixamos estas e outras melhoras como trabalho futuro.

@@ -1,4 +1,8 @@
 #!/bin/bash
+mkdir -p pdf
 R --vanilla < comp_tax.r
 R --vanilla < time_comp.r
+R --vanilla < time_decomp.r
+R --vanilla < rq2.r
+R --vanilla < rq3.r
 
