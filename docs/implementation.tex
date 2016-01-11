@@ -13,8 +13,12 @@ onde n é o tamanho do texto. Uma vez construído o array de sufixos, a
 complexidade da busca passa a ser linear com relação ao tamanho do padrão.
 
 \subsubsection{\lst}
-O algoritmo de indexação implementado teve como
-base ~\cite{UkkonenST} para a construção em tempo linear
+ 
+O algoritmo de indexação implementado\footnote{Apesar de termos implementado
+o ST, não conseguimos o fazer de maneira eficiente,
+portanto não o integramos à interface \ipmt. A implementação ST.cpp
+está disponível para que sejam realizadas buscas.}
+teve como base ~\cite{UkkonenST} para a construção em tempo linear
 de uma árvore de sufixos. A estrutura implementada representa
 todos os sufixos de uma cadeia. A implementação contém alguns truques
 para que a construção seja feita em tempo linear. Um desses truque é adicionar aos
@@ -28,7 +32,7 @@ de memória fragmentada.
 O algoritmo de compressão \lz teve como base a implementação vista em sala de
 aula e descrita em~\cite{Storer:1987:DCM:42791}. O \lz utiliza um dicionário
 dinâmico explícito, onde a referência compreende um par composto pelo índice no
-dicionário e o caracter de mismatch.
+dicionário e o caractere de mismatch.
 
 Durante a compressão (\lz-encode), o dicionário é criado dinâmicamente a cada
 mismatch. Junto com o dicionário, também é criado um código que representa a
@@ -72,7 +76,7 @@ código de saída tem somente um bit, usamos como estrutura de dados para guarda
 o código um vector de
 bool\footnote{\url{http://en.cppreference.com/w/cpp/container/vector_bool}}.
 Optamos por essa estrutura de dados pois ela possui uma otimização de espaço:
-Um bool em C++ ocupa 8 bits (1 byte) de espaço na memória, porém um vector de
+Um bool em C++ ocupa 8 bits (1 byte) de memória, porém um vector de
 bool usa somente 1 bit para cada elemento.
 
 Outra peculiaridade desse algorítmo é que pode ocorrer do arquivo descomprimido
@@ -82,7 +86,8 @@ sequência de bits. Caso o número de bits não seja um múltiplo de 8, o últim
 byte precisa ser preenchido com uma sequência de 0s, o que pode alterar o último
 byte na hora da descompressão. Isso poderia ser contornado com alguma flag no
 início do arquivo comprimido, informando quantos bits devem ser descartados do
-último byte. Deixamos isso como trabalho futuro.
+último byte. Deixamos isso como trabalho futuro, pois verificamos através de
+experimentos que isso pouco afeta o desempenho e resultados do algorítmo.
 
 \subsection{Descrição do formato .idx}
 
