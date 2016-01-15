@@ -3,10 +3,10 @@
 # Halts the script when a nonzero value is returned from a command.
 set -e
 
-RESULTS=experiments/results.txt
-COMP_TAX_CSV=experiments/comp_tax.raw
-DECOMP_TIME_CSV=experiments/time_decomp.raw
-TIME_CSV=experiments/time_comp.raw
+RESULTS=experiments/proteins_results.txt
+COMP_TAX_CSV=experiments/proteins_comp_tax.raw
+DECOMP_TIME_CSV=experiments/proteins_time_decomp.raw
+TIME_CSV=experiments/proteins_time_comp.raw
 
 NUMBER_OF_ITER=10
 
@@ -98,8 +98,8 @@ function start_exp {
 }
 
 function clean {
-    rm -rf arquivos/*.comp
-    rm -rf arquivos/*.decomp
+    rm -rf arquivos-proteins/*.comp
+    rm -rf arquivos-proteins/*.decomp
     rm -rf temp.gz
 }
 
@@ -109,20 +109,17 @@ start_exp
 make
 
 # Perform experiments here
-compress arquivos/100k.txt
-compress arquivos/200k.txt
-compress arquivos/300k.txt
-compress arquivos/700k.txt
-compress arquivos/2mb.txt
-compress arquivos/3mb.txt
-compress arquivos/5mb.txt
-compress arquivos/10mb.txt
-compress arquivos/50mb.txt
-compress arquivos/100mb.txt
-compress arquivos/200mb.txt
-compress arquivos/300mb.txt
-compress arquivos/500mb.txt
-#compress arquivos/1gb.txt
+compress arquivos-proteins/100k.txt
+compress arquivos-proteins/200k.txt
+compress arquivos-proteins/300k.txt
+compress arquivos-proteins/700k.txt
+compress arquivos-proteins/2mb.txt
+compress arquivos-proteins/3mb.txt
+compress arquivos-proteins/5mb.txt
+compress arquivos-proteins/10mb.txt
+compress arquivos-proteins/50mb.txt
+compress arquivos-proteins/100mb.txt
+compress arquivos-proteins/200mb.txt
 
 # Clean-up
 clean
