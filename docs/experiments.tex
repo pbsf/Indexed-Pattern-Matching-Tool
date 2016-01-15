@@ -24,22 +24,43 @@ Todos os scripts e resultados estão disponíveis no diretório {\it experiments
 \subsection{\rqone}
 Nós comparamos a nossa implementação do \lz com o \gzip em dois aspectos: Tempo
 e taxa de compressão.
-Para realizar essa comparação, nós dividimos um arquivo\footnote{
+Para realizar essa comparação, primeiramente nós dividimos um arquivo\footnote{
 \url{http://pizzachili.dcc.uchile.cl/texts/nlang/english.1024MB.gz}}
 que contém 1GB de texto em inglês em arquivos de
 tamanhos distintos: 100KB, 200KB, 300KB, 700KB, 1MB, 2MB, 3MB, 5MB, 50MB, 100MB,
 200MB, 300MB e 500MB. Cada arquivo desse contém os primeiros n bytes do
-arquivo original, onde n é o tamanho do arquivo.
+arquivo original, onde n é o tamanho do arquivo. Fizemos medições em relação ao
+tempo e à taxa de compressão para cada operação de compressão e descompressão
+levando em conta os algoritmos \lz e gzip.
+
+Separadamente, repetimos também o mesmo experimento acima mas
+usando como entrada um arquivo\footnote{\url{http://pizzachili.dcc.uchile.cl/texts/protein/proteins.200MB.gz}}
+de 200MB contendo sequências de proteinas. Esse arquivo também foi divido
+em arquivos de tamanhos distintos: 100KB, 200KB, 300KB, 700KB, 1MB, 2MB, 3MB, 5MB,
+50MB, 100MB, 200MB.
 
 \subsubsection{Tempo}
 
-Abaixo está um gráfico que relaciona o tempo que leva para comprimir um arquivo
-com o tamanho dele, para ambos o nosso \lz e o \gzip.
-\\
-\includegraphics[scale=0.74]{../experiments/R/pdf/time_comp}
-\\
 
-Ambas as funções são (ou se aproximam muito de) retas, o que comprova que a
+\begin{figure}
+\includegraphics[scale=0.74]{../experiments/R/pdf/time_comp}
+\caption{Compressão: Arquivos contendo textos em inglês}
+\end{figure}
+
+\begin{figure}
+\includegraphics[scale=0.74]{../experiments/R/pdf/proteins_time_comp}
+\caption{Compressão: Arquivos contendo sequência de proteinas}
+\end{figure}
+
+
+Abaixo estão dois gráficos que relacionam o tempo que leva para comprimir um arquivo
+contendo com o tamanho dele, para ambos o nosso \lz e o \gzip. O primeiro
+gráfico é referente aos arquivos contendo texto em inglês, enquanto o segundo
+aos arquivos contendo sequências de proteinas.
+
+Note que os resultados foram muito parecidos apesar do conteúdo dos arquivos
+serem diferentes.
+Ambas as funções de cada gráfico são (ou se aproximam muito de) retas, o que comprova que a
 nossa implementação do \lz, bem como o \gzip, comprimem em tempo linear de
 acordo com o tamanho do arquivo. Porém, a constante que multiplica a função do
 \gzip é bem menor do que a nossa. Isso acontece porque o \gzip está em
@@ -47,32 +68,67 @@ desenvolvimento a mais de 23 anos, onde experts estão sempre otimizando o
 algoritmo, fazendo com que essa constante da função linear seja cada vez menor.
 
 
+
+
 Os arquivos comprimidos acima foram descomprimidos com ambas as ferramentas \lz
-e \gzip. Abaixo está um gráfico que relaciona o tempo que leva para descomprimir
-um arquivo e o tamanho dele.
-\\
-\includegraphics[scale=0.74]{../experiments/R/pdf/time_decomp}
-\\
+e \gzip.
+
+
+Abaixo estão dois gráficos que relacionam o tempo que leva para descomprimir
+um arquivo e o tamanho dele, um para os arquivos contendo texto em inglês e
+outro para arquivos contendo sequência de proteinas.
+
+
 
 Obtivemos novamente um resultado consistente com o anterior: ambos possuem
 complexidade linear, porém a constante da descompressão do \gzip é muito
 superior à da nossa implementação. Isso ficou ainda mais acentuado na
 descompressão do que na compressão.
 
+\begin{figure}[ht]
+\includegraphics[scale=0.74]{../experiments/R/pdf/time_decomp}
+\caption{Descompressão: Arquivos contendo textos em inglês}
+\end{figure}
+
+\begin{figure}[ht]
+\includegraphics[scale=0.74]{../experiments/R/pdf/proteins_time_decomp}
+\caption{Descompressão: Arquivos contendo sequência de proteinas}
+\end{figure}
+
+
+
 \subsubsection{Taxa de compressão}
 
-Abaixo está um gráfico que relaciona a taxa de compressão de um arquivo com o
-tamanho original dele, para ambos o nosso \lz e o \gzip.
-\\
+\begin{figure}[H]
 \includegraphics[scale=0.74]{../experiments/R/pdf/comp_tax}
-\\
+\caption{Taxa de compressão: Arquivos contendo textos em inglês}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[scale=0.74]{../experiments/R/pdf/proteins_comp_tax}
+\caption{Taxa de compressão: Arquivos contendo sequência de proteinas}
+\end{figure}
+
+
+
+Acima estão dois gráficos, um considerando arquivos de textos em inglês e outro
+com arquivos contendo sequências de proteínas,
+que relacionam a taxa de compressão de um arquivo com o
+tamanho original dele, para ambos o nosso \lz e o \gzip.
 
 Novamente, os resultados se assemelham quando analisados separadamente:
 Ambos possuem uma variação inicial (apesar do \gzip ter uma bem menor) e se
-estabilizam para arquivos maiores. Porém, o \gzip se estabiliza com uma taxa de
-compressão próxima de 60\%, enquanto que o nosso \lz se estabiliza com uma taxa
-próxima de 42\%. Recorremos novamente ao argumento de que o \gzip está em
+estabilizam para arquivos maiores. Porém, para textos em inglês,
+o \gzip se estabiliza com uma taxa de compressão próxima de 60\%,
+enquanto que o nosso \lz se estabiliza com uma taxa
+próxima de 42\%. Já para sequências de proteínas o \gzip se estabiliza com taxa
+de 53\%, enquanto o \lz se estabiliza com taxa de 20\%.
+Recorremos novamente ao argumento de que o \gzip está em
 desenvolvimento a muito mais tempo e por isso possui mais otimizações.
+Também podemos perceber que a taxa de compressão varia com o conteúdo do
+arquivo, diferente da pequena diferença encontrada nos tempos de compressão e
+descompessão.
+
 
 \subsection{\rqtwo}
 Para responder à essa pergunta nós utilizamos a ferramenta \ipmt para criar um
@@ -81,7 +137,7 @@ de diversos padrões utilizando \ipmt no arquivo indexado e comparando com o
 tempo para pesquisar os padrões utilizando grep no texto original. O tempo
 que leva para criar o \lsa foi desconsiderado.
 
-Nós consideramos somente o arquivo de 50MB pelo seguinte motivo: O arquivo .idx
+Nós consideramos somente o arquivo de 50MB contendo texto inglês pelo seguinte motivo: O arquivo .idx
 gerado pela ferramenta \ipmt possui ambos o texto original e o índice
 comprimidos. Acontece que o array do nosso LSA tem, em média, quase 10 vezes o
 tamanho do arquivo original. Ou seja, indexar e comprimir um arquivo de 50MB
@@ -91,7 +147,7 @@ nossa compressão criou um arquivo .idx de 341MB, onde as buscas serão realizad
 Indexar arquivos maiores do que 50MB é uma tarefa factível, mas
 custosa e demorada nas nossas implementações.
 
-Geramos randomicamente 1000 padrões: 10 padrões com tamanho de cada valor
+Geramos randomicamente 1000 padrões (frases ou palavras em inglês): 10 padrões com tamanho de cada valor
 entre 1 e 100 incluso. Após isso, realizamos a medição de tempo que o grep e
 que o \ipmt levaram para buscar por esses padrões no arquivo de 50MB.
 Consideramos a média entre 10 execuções de cada ferramenta. O
